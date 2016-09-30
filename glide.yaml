@@ -1,0 +1,4 @@
+package: shadowsocks-manager
+import:
+    - package: gopkg.in/mgo.v2
+    - package: gopkg.in/redis.v4
