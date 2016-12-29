@@ -17,7 +17,7 @@ func main() {
         panic(err)
     }
 
-    defer Connector.Close()
+    //defer Connector.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
