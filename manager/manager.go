@@ -9,7 +9,7 @@ import (
 
 type Flow struct {
     Port     int32
-    Size     int64
+    Size     float64
     Created  string
     Modified string
 }

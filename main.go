@@ -2,6 +2,8 @@ package main
 
 import (
     "fmt"
+    "time"
+    "strconv"
     "strings"
     "encoding/json"
     "shadowsocks-manager/manager"
@@ -32,20 +34,13 @@ func main() {
             fmt.Println("start to listen shadowsocks flow...")
         } else {
             if err := json.NewDecoder(strings.NewReader(message)).Decode(&m); err == nil {
-
-
-
                 for k, v := range m {
                     fmt.Printf("k is of type %T, v is of type %T\n", k, v)
                     switch vv := v.(type) {
-                    case int, int8, int32, int64:
-                        fmt.Println(k, "is int", vv)
-                    case uint, uint8, uint16, uint32, uint64, uintptr:
-                        fmt.Println(k, "is uint", vv)
-                    case string:
-                        fmt.Println(k, "is string", vv)
+                    case float64:
+                        USock.SaveToDB(&manager.Flow{Port: strconv.Atoi(k), Size: vv, Created: time.Now().Format("2006-01-02 15:04:05"), Modified: time.Now().Format("2006-01-02 15:04:05")})
                     default:
-                        fmt.Println(k, "====", vv)
+                        fmt.Printf("undefined message type: %T => %T", k, v)
                     }
                 }
             }
