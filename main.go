@@ -29,7 +29,7 @@ func main() {
     go USock.Ping()
 
     // todo每1分钟检查流量是否超标
-    go USock.HeartBeat(60, func() {
+    go USock.HeartBeat(60, func() error {
         fmt.Println("this is task to check users")
         return nil
     })
