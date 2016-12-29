@@ -1,9 +1,8 @@
-package main
+package manager
 
 import (
     "os"
     "net"
-    "fmt"
     "strconv"
 )
 
@@ -55,19 +54,4 @@ func (us *UnixSock) Rec(fn func(res []byte)) {
             fn(buffer)
         }
     }
-}
-
-func main() {
-    USock := UnixSock{
-        Net: "unixgram",
-        LSock: "/var/run/manager.sock",
-        RSock: "/var/run/shadowsocks-manager.sock",
-    }
-
-    USock.Listen()
-    go USock.Ping()
-    go USock.Rec(func(buffer []byte) {
-        fmt.Println(string(buffer))
-    })
-    select {}
 }
