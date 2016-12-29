@@ -44,7 +44,7 @@ func main() {
         if len(Ports) > 0 {
             StartTime, _ := time.Parse("2016-01-02", time.Now().Format("2006-01-02"))
 
-            fmt.Println(StartTime)
+            fmt.Println(StartTime, Ports)
 
             FlowModel := Connector.DB("vpn").C("flows")
             Pipe := FlowModel.Pipe([]bson.M{
