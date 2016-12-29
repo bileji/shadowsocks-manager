@@ -29,13 +29,17 @@ func main() {
     go USock.Rec(func(buffer []byte) {
 
         flow := make(map[string]interface{})
-        if nil == json.Unmarshal([]byte(strings.TrimLeft(string(buffer), "stat: ")), flow) {
+        json_str := strings.TrimLeft(string(buffer), "stat: ")
+        fmt.Println(json_str)
+        if nil == json.Unmarshal([]byte(json_str), flow) {
             for k, v := range flow {
                 switch vv := v.(type) {
                 case int, int8, int32, int64:
                     fmt.Println(k, "is int", vv)
                 case string:
                     fmt.Println(k, "is string", vv)
+                default:
+                    fmt.Println(k, "====", vv)
                 }
             }
         }
