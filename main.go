@@ -16,26 +16,32 @@ func main() {
         panic(err)
     }
 
+    defer connector.Close()
+
     USock := manager.UnixSock{
         Net: "unixgram",
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
-        Collection: connector.C("flows"),
+        Collection: connector.DB("vpn").C("flows"),
     }
 
     USock.Listen()
     go USock.Ping()
 
-    // todo每2分钟检查流量是否超标
+    // todo每1分钟检查流量是否超标
+    go USock.HeartBeat(60, func() {
+        fmt.Println("this is task to check users")
+        return nil
+    })
 
+    // 监听各端口流量情况
     go USock.Rec(func(buffer []byte) {
         m := make(map[string]interface{})
-        if message := strings.TrimLeft(string(buffer), "stat: "); string(message) == "pong" {
-            fmt.Println("start to listen shadowsocks flow...")
+        if message := strings.TrimLeft(string(buffer), "stat: "); strings.EqualFold(message, "pong") {
+            fmt.Println("start the program: shadowsocks-manager")
         } else {
             if err := json.NewDecoder(strings.NewReader(message)).Decode(&m); err == nil {
                 for k, v := range m {
-                    fmt.Printf("k is of type %T, v is of type %T\n", k, v)
                     switch vv := v.(type) {
                     case float64:
                         port, _ := strconv.Atoi(k)

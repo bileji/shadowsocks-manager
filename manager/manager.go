@@ -5,6 +5,7 @@ import (
     "net"
     "strconv"
     "gopkg.in/mgo.v2"
+    "github.com/noaway/heartbeat"
 )
 
 type Flow struct {
@@ -22,17 +23,17 @@ type UnixSock struct {
     Collection *mgo.Collection
 }
 
-func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
+func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Session) {
     session, err := mgo.Dial(host)
     if err != nil {
         return err, nil
     }
-    //defer session.Close()
+
     err = session.DB(db).Login(username, password)
     if err != nil {
         return err, nil
     }
-    return nil, session.DB(db)
+    return nil, session
 }
 
 func (us *UnixSock) Listen() {
@@ -78,6 +79,17 @@ func (us *UnixSock) Rec(fn func(res []byte)) {
     }
 }
 
+func (us *UnixSock) HeartBeat(spec int, fn func() error) error {
+    ht, err := heartbeat.NewTast("task", spec)
+    if err != nil {
+        return err
+    }
+    ht.Start(fn)
+
+    return nil
+}
+
+// DB相关
 func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
     err = us.Collection.Insert(flow)
     return err
