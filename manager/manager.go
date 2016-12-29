@@ -79,6 +79,6 @@ func (us *UnixSock) Rec(fn func(res []byte)) {
 }
 
 func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
-    err = us.Collection.Insert(&flow)
+    err = us.Collection.Insert(flow)
     return err
 }
