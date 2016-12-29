@@ -8,6 +8,15 @@ import (
     "github.com/noaway/heartbeat"
 )
 
+type User struct {
+    Username string
+    Port     int32
+    Status   bool
+    Password string
+    Created  string
+    Modified string
+}
+
 type Flow struct {
     Port     int32
     Size     float64
