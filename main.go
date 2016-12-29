@@ -44,7 +44,7 @@ func main() {
         //for iter.Next(&result) {
         //    fmt.Printf("Result: %v\n", result.NAME)
         //}
-        if Iter := UserModel.Find(bson.M{"Status": true}).Iter(); Iter.Next(&User) {
+        if Iter := UserModel.Find(nil).Iter(); Iter.Next(&User) {
             fmt.Println(User)
             //for _, User := range Users {
             //    Ports = append(Ports, User.Port)
