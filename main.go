@@ -32,36 +32,24 @@ func main() {
     // todo每1分钟检查流量是否超标
     go USock.HeartBeat(5, func() error {
         Ports := []int32{}
-        User := manager.User{}
+        Users := []manager.User{}
 
         UserModel := Connector.DB("vpn").C("users")
-        //if UserModel.Find(bson.M{"Status": true}).All(&Users) == nil {
-        //    fmt.Println(Users)
-        //    for _, User := range Users {
-        //        Ports = append(Ports, User.Port)
-        //    }
-        //}
-        //for iter.Next(&result) {
-        //    fmt.Printf("Result: %v\n", result.NAME)
-        //}
-        Iter := UserModel.Find(nil).Iter();
-        for Iter.Next(&User) {
-            fmt.Println(User)
-            //for _, User := range Users {
-            //    Ports = append(Ports, User.Port)
-            //}
+        if UserModel.Find(bson.M{"Status": true}).All(&Users) == nil {
+            fmt.Println(Users)
+            for _, User := range Users {
+                Ports = append(Ports, User.Port)
+            }
         }
 
         if len(Ports) > 0 {
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 
-            fmt.Println(StartTime.Unix(), Ports)
-
             FlowModel := Connector.DB("vpn").C("flows")
             Pipe := FlowModel.Pipe([]bson.M{
-                //{
-                //    "$match": bson.M{"Created": bson.M{"$gt": StartTime.Unix().Format("2006-01-02 15:04:05")}},
-                //},
+                {
+                    "$match": bson.M{"Created": bson.M{"$gt": StartTime.Unix().Format("2006-01-02 15:04:05")}},
+                },
                 {
                     "$group": bson.M{"_id": "$Port", "total": bson.M{"$sum": "$Size"}},
                 },
