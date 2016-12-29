@@ -22,7 +22,7 @@ func main() {
     }
 
     USock.Listen()
-    //go USock.Ping()
+    go USock.Ping()
 
     // todo每2分钟检查流量是否超标
 
