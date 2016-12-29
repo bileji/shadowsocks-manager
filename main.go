@@ -1,6 +1,7 @@
 package main
 
 import (
+    "io"
     "fmt"
     "strings"
     "encoding/json"
@@ -31,9 +32,15 @@ func main() {
         flow := make(map[string]interface{})
         json_str := strings.TrimLeft(string(buffer), "stat: ")
         fmt.Println("`" + json_str + "`")
-        err = json.Unmarshal([]byte("`" + json_str + "`"), &flow)
-        fmt.Println(err)
-        if err != nil {
+
+        dec := json.NewDecoder(strings.NewReader("`" + json_str + "`"))
+
+        for {
+            if err := dec.Decode(&flow); err == io.EOF {
+                break
+            } else if err != nil {
+                fmt.Println(err)
+            }
             for k, v := range flow {
                 switch vv := v.(type) {
                 case int, int8, int32, int64:
@@ -46,5 +53,6 @@ func main() {
             }
         }
     })
+
     select {}
 }
