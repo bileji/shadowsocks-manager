@@ -30,7 +30,7 @@ func main() {
     go USock.Ping()
 
     // todo每1分钟检查流量是否超标
-    go USock.HeartBeat(20, func() error {
+    go USock.HeartBeat(5, func() error {
         Ports := []int32{}
         Users := []manager.User{}
 
@@ -43,7 +43,7 @@ func main() {
         }
 
         if len(Ports) > 0 {
-            StartTime, _ := time.Parse("2016-01-02", time.Now().Format("2006-01-02"))
+            StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 
             fmt.Println(StartTime.Unix(), Ports)
 
