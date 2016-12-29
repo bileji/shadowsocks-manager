@@ -4,13 +4,35 @@ import (
     "os"
     "net"
     "strconv"
+    "gopkg.in/mgo.v2"
 )
 
+type Flow struct {
+    Port     int32
+    Size     int64
+    Created  string
+    Modified string
+}
+
 type UnixSock struct {
-    Net   string
-    LSock string
-    RSock string
-    UConn *net.UnixConn
+    Net        string
+    LSock      string
+    RSock      string
+    UConn      *net.UnixConn
+    Collection *mgo.Collection
+}
+
+func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
+    session, err := mgo.Dial(host)
+    if err != nil {
+        return err, nil
+    }
+    defer session.Close()
+    err = session.DB(db).Login(username, password)
+    if err != nil {
+        return err, nil
+    }
+    return nil, session.DB(db)
 }
 
 func (us *UnixSock) Listen() {
@@ -54,4 +76,9 @@ func (us *UnixSock) Rec(fn func(res []byte)) {
             fn(buffer)
         }
     }
+}
+
+func (us *UnixSock) SaveToDB(flow Flow) (err error) {
+    err = us.Collection.Insert(&flow)
+    return err
 }
