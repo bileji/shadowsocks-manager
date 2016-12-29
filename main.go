@@ -1,7 +1,6 @@
 package main
 
 import (
-    "io"
     "fmt"
     "strings"
     "encoding/json"
@@ -28,30 +27,25 @@ func main() {
     // todo每2分钟检查流量是否超标
 
     go USock.Rec(func(buffer []byte) {
-
-        flow := make(map[string]interface{})
-        json_str := strings.TrimLeft(string(buffer), "stat: ")
-        fmt.Println("`" + json_str + "`")
-
-        dec := json.NewDecoder(strings.NewReader(json_str))
-
-        //for {
-        if err := dec.Decode(&flow); err == io.EOF {
-
-        } else if err != nil {
-            fmt.Println(err)
-        }
-        for k, v := range flow {
-            switch vv := v.(type) {
-            case int, int8, int32, int64:
-                fmt.Println(k, "is int", vv)
-            case string:
-                fmt.Println(k, "is string", vv)
-            default:
-                fmt.Println(k, "====", vv)
+        m := make(map[string]interface{})
+        if message := strings.TrimLeft(string(buffer), "stat: "); message == "pong" {
+            fmt.Println("start to listen shadowsocks flow...")
+        } else {
+            if err := json.NewDecoder(strings.NewReader(message)).Decode(&m); err == nil {
+                for k, v := range m {
+                    switch vv := v.(type) {
+                    case int, int8, int32, int64:
+                        fmt.Println(k, "is int", vv)
+                    case uint, uint8, uint16, uint32, uint64, uintptr:
+                        fmt.Println(k, "is uint", vv)
+                    case string:
+                        fmt.Println(k, "is string", vv)
+                    default:
+                        fmt.Println(k, "====", vv)
+                    }
+                }
             }
         }
-        //}
     })
 
     select {}
