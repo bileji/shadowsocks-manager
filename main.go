@@ -29,6 +29,7 @@ func main() {
     go USock.Rec(func(buffer []byte) {
 
         flow := make(map[string]interface{})
+        fmt.Println(string(buffer))
         json_str := strings.TrimLeft(string(buffer), "stat: ")
         fmt.Println(json_str)
         if nil == json.Unmarshal([]byte(json_str), flow) {
