@@ -33,6 +33,7 @@ func main() {
         if message := strings.TrimLeft(string(buffer), "stat: "); message == "pong" {
             fmt.Println("start to listen shadowsocks flow...")
         } else {
+            fmt.Println(message)
             if err := json.NewDecoder(strings.NewReader(message)).Decode(&m); err == nil {
                 for k, v := range m {
                     fmt.Printf("k is of type %T, v is of type %T\n", k, v)
