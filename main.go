@@ -30,7 +30,7 @@ func main() {
 
     go USock.Rec(func(buffer []byte) {
         m := make(map[string]interface{})
-        if message := strings.TrimLeft(string(buffer), "stat: "); message == "pong" {
+        if message := strings.TrimLeft(string(buffer), "stat: "); string(message) == "pong" {
             fmt.Println("start to listen shadowsocks flow...")
         } else {
             fmt.Println(message)
