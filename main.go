@@ -32,7 +32,11 @@ func main() {
             fmt.Println("start to listen shadowsocks flow...")
         } else {
             if err := json.NewDecoder(strings.NewReader(message)).Decode(&m); err == nil {
+
+
+
                 for k, v := range m {
+                    fmt.Printf("k is of type %T, v is of type %T\n", k, v)
                     switch vv := v.(type) {
                     case int, int8, int32, int64:
                         fmt.Println(k, "is int", vv)
