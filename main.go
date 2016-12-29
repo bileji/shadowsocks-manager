@@ -34,14 +34,6 @@ func main() {
         Ports := []int32{}
         Users := []manager.User{}
 
-        err, Connector := manager.ConnectToMgo("127.0.0.1", "vpn", "shadowsocks", "mlgR4evB")
-
-        if err != nil {
-            panic(err)
-        }
-
-        defer Connector.Close()
-
         UserModel := Connector.DB("vpn").C("users")
         if UserModel.Find(bson.M{"Status": true}).All(&Users) == nil {
             fmt.Println(Users)
