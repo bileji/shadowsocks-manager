@@ -29,10 +29,8 @@ func main() {
     go USock.Rec(func(buffer []byte) {
 
         flow := make(map[string]interface{})
-        fmt.Println(string(buffer))
         json_str := strings.TrimLeft(string(buffer), "stat: ")
-        fmt.Println(json_str)
-        if nil == json.Unmarshal([]byte(json_str), flow) {
+        if nil == json.Unmarshal([]byte(json_str), &flow) {
             for k, v := range flow {
                 switch vv := v.(type) {
                 case int, int8, int32, int64:
