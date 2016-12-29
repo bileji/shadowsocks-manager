@@ -33,25 +33,25 @@ func main() {
         json_str := strings.TrimLeft(string(buffer), "stat: ")
         fmt.Println("`" + json_str + "`")
 
-        dec := json.NewDecoder(strings.NewReader("`" + json_str + "`"))
+        dec := json.NewDecoder(strings.NewReader(json_str))
 
-        for {
-            if err := dec.Decode(&flow); err == io.EOF {
-                break
-            } else if err != nil {
-                fmt.Println(err)
-            }
-            for k, v := range flow {
-                switch vv := v.(type) {
-                case int, int8, int32, int64:
-                    fmt.Println(k, "is int", vv)
-                case string:
-                    fmt.Println(k, "is string", vv)
-                default:
-                    fmt.Println(k, "====", vv)
-                }
+        //for {
+        if err := dec.Decode(&flow); err == io.EOF {
+
+        } else if err != nil {
+            fmt.Println(err)
+        }
+        for k, v := range flow {
+            switch vv := v.(type) {
+            case int, int8, int32, int64:
+                fmt.Println(k, "is int", vv)
+            case string:
+                fmt.Println(k, "is string", vv)
+            default:
+                fmt.Println(k, "====", vv)
             }
         }
+        //}
     })
 
     select {}
