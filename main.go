@@ -35,7 +35,7 @@ func main() {
         Users := []manager.User{}
 
         UserModel := Connector.DB("vpn").C("users")
-        if UserModel.Find(bson.M{}).All(&Users) == nil {
+        if UserModel.Find(bson.M{"Status": true}).All(&Users) == nil {
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
             }
@@ -44,11 +44,13 @@ func main() {
         if len(Ports) > 0 {
             StartTime, _ := time.Parse("2016-01-02", time.Now().Format("2006-01-02"))
 
+            fmt.Println(StartTime)
+
             FlowModel := Connector.DB("vpn").C("flows")
             Pipe := FlowModel.Pipe([]bson.M{
-                {
-                    "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
-                },
+                //{
+                //    "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
+                //},
                 {
                     "$group": bson.M{"_id": "$Port", "total": bson.M{"$sum": "$Size"}},
                 },
@@ -58,6 +60,7 @@ func main() {
             if Pipe.All(&Resp) != nil {
                 // todo print err info
             }
+
             fmt.Println(Resp)
         } else {
             fmt.Println("collection users is null")
