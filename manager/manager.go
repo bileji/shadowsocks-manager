@@ -27,7 +27,7 @@ func ConnectToMgo(host string, db string, username string, password string) (err
     if err != nil {
         return err, nil
     }
-    defer session.Close()
+    //defer session.Close()
     err = session.DB(db).Login(username, password)
     if err != nil {
         return err, nil
