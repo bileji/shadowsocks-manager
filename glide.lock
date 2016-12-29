@@ -1,0 +1,8 @@
+hash: 3f0f8157b55d4de1dbdc67bc16bab0a3e31145961d3cc70ef31e7bc3c75c19ef
+updated: 2016-09-30T09:06:10.809656495+08:00
+imports:
+- name: gopkg.in/mgo.v2
+  version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
+- name: gopkg.in/redis.v4
+  version: a7d1d0b9ac18e46d986729d8b71ad25d6a23986b
+devImports: []
