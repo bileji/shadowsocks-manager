@@ -30,7 +30,7 @@ func main() {
     go USock.Ping()
 
     // todo每1分钟检查流量是否超标
-    go USock.HeartBeat(60, func() error {
+    go USock.HeartBeat(20, func() error {
         Ports := []int32{}
         Users := []manager.User{}
 
