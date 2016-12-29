@@ -40,7 +40,7 @@ func main() {
                     switch vv := v.(type) {
                     case float64:
                         port, _ := strconv.Atoi(k)
-                        USock.SaveToDB(&manager.Flow{Port: port, Size: vv, Created: time.Now().Format("2006-01-02 15:04:05"), Modified: time.Now().Format("2006-01-02 15:04:05")})
+                        USock.SaveToDB(&manager.Flow{Port: int32(port), Size: vv, Created: time.Now().Format("2006-01-02 15:04:05"), Modified: time.Now().Format("2006-01-02 15:04:05")})
                     default:
                         fmt.Printf("undefined message type: %T => %T", k, v)
                     }
