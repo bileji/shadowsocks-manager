@@ -30,8 +30,8 @@ func main() {
 
         flow := make(map[string]interface{})
         json_str := strings.TrimLeft(string(buffer), "stat: ")
-        fmt.Println(`"` + json_str + `"`)
-        err = json.Unmarshal([]byte(`"` + json_str + `"`), &flow)
+        fmt.Println("`" + json_str + "`")
+        err = json.Unmarshal([]byte("`" + json_str + "`"), &flow)
         fmt.Println(err)
         if err != nil {
             for k, v := range flow {
