@@ -22,6 +22,16 @@ func main() {
         panic(err)
     }
 
+    Con.C("users").Insert(manager.User{
+        Username: "邓羽浩",
+        Port: 8390,
+        Status: true,
+        Password:"5dae3cdc",
+        AllowSize: 1000000,
+        Created: time.Now().Format("2006-01-02 15:04:05"),
+        Modified: time.Now().Format("2006-01-02 15:04:05"),
+    })
+
     defer Con.Session.Close()
 
     USock := manager.UnixSock{
@@ -41,7 +51,7 @@ func main() {
         Users := []manager.User{}
         Limits := make(map[int32]Limit)
 
-        fmt.Printf("%s : +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), 30)
+        fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), 30)
 
         if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
