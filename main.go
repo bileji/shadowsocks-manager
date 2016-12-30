@@ -8,7 +8,6 @@ import (
     "encoding/json"
     "shadowsocks-manager/manager"
     //"gopkg.in/mgo.v2/bson"
-    "gopkg.in/mgo.v2"
 )
 
 func main() {
