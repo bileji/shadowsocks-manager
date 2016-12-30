@@ -15,8 +15,20 @@ type Limit struct {
     Password  string
 }
 
+var (
+    MONGODB_HOST = "127.0.0.1:27017"
+    MONGODB_DATABASE = "vpn"
+    MONGODB_USERNAME = "shadowsocks"
+    MONGODB_PASSWORD = "mlgR4evB"
+
+    USER_COLLECTION = "users"
+    FLOW_COLLECTION = "flows"
+
+    HEARTBEAT_FREQUENCY = 30
+)
+
 func main() {
-    err, Con := manager.ConnectToMgo("127.0.0.1:27017", "vpn", "shadowsocks", "mlgR4evB")
+    err, Con := manager.ConnectToMgo(MONGODB_HOST, MONGODB_DATABASE, MONGODB_USERNAME, MONGODB_PASSWORD)
 
     if err != nil {
         panic(err)
@@ -29,21 +41,21 @@ func main() {
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
         Con: Con,
-        Collection: "flows",
+        Collection: FLOW_COLLECTION,
     }
 
     USock.Listen()
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    go USock.HeartBeat(30, func() error {
+    go USock.HeartBeat(HEARTBEAT_FREQUENCY, func() error {
         Ports := []int32{}
         Users := []manager.User{}
         Limits := make(map[int32]Limit)
 
-        fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), 30)
+        fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), HEARTBEAT_FREQUENCY)
 
-        if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
+        if USock.Con.C(USER_COLLECTION).Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
                 if User.Port != 0 {
                     Ports = append(Ports, User.Port)
@@ -57,7 +69,7 @@ func main() {
 
         if len(Ports) > 0 {
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-            Pipe := USock.Con.C("flows").Pipe([]bson.M{
+            Pipe := USock.Con.C(FLOW_COLLECTION).Pipe([]bson.M{
                 {
                     "$match": bson.M{
                         "port": bson.M{"$in": Ports},
