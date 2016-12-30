@@ -38,7 +38,7 @@ func main() {
         if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
-                fmt.Println(User.AllowSize == nil)
+                fmt.Println(User.AllowSize)
             }
         }
 
