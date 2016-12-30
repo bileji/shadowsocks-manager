@@ -37,28 +37,32 @@ var (
     HEARTBEAT_FREQUENCY = 30
 )
 
-func Header() {
+func GetArgs() *Options {
     flag.Usage = func() {
         fmt.Fprintf(os.Stderr, "Welcome to use %s ^_^____\r\nOptions:\n", os.Args[0])
         flag.PrintDefaults()
     }
 
-    flag.String("host", MONGODB_HOST, "mongodb host:port")
-    flag.String("db", MONGODB_DATABASE, "db name")
-    flag.String("u", MONGODB_USERNAME, "db's username")
-    flag.String("p", MONGODB_PASSWORD, "db's password")
-    flag.Int("fq", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
+    DBHost := flag.String("host", MONGODB_HOST, "mongodb host:port")
+    DBName := flag.String("db", MONGODB_DATABASE, "db name")
+    Username := flag.String("u", MONGODB_USERNAME, "db's username")
+    Pwd := flag.String("p", MONGODB_PASSWORD, "db's password")
+    Fq := flag.Int("fq", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
 
     flag.Parse()
-    //return &Options{
-    //
-    //}
+    return &Options{
+        DBHost: *DBHost,
+        DBName: *DBName,
+        DBUsername: *Username,
+        DBPassword: *Pwd,
+        HeartbeatFrequency: *Fq,
+    }
 }
 
 func main() {
-    go Header()
+    Args := GetArgs()
 
-    err, Con := manager.ConnectToMgo(MONGODB_HOST, MONGODB_DATABASE, MONGODB_USERNAME, MONGODB_PASSWORD)
+    err, Con := manager.ConnectToMgo(Args.DBHost, Args.DBName, Args.DBUsername, Args.DBPassword)
     if err != nil {
         panic(err)
     }
@@ -79,12 +83,12 @@ func main() {
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    go USock.HeartBeat(HEARTBEAT_FREQUENCY, func() error {
+    go USock.HeartBeat(Args.HeartbeatFrequency, func() error {
         Ports := manager.New()
         Users := []manager.User{}
         Limits := make(map[int32]Limit)
 
-        fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), HEARTBEAT_FREQUENCY)
+        fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), Args.HeartbeatFrequency)
 
         if USock.Con.C(USER_COLLECTION).Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
