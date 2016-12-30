@@ -35,6 +35,9 @@ func main() {
         Users := []manager.User{}
 
         UserModel := Connector.DB("vpn").C("users")
+
+        fmt.Println(UserModel.Count())
+
         if UserModel.Find(bson.M{"Status": true}).All(&Users) == nil {
             fmt.Println(Users)
             for _, User := range Users {
