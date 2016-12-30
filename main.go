@@ -44,12 +44,15 @@ func main() {
         Collection: FLOW_COLLECTION,
     }
 
+    // 正在监听的端口
+    //ListenPorts := manager.New()
+
     USock.Listen()
     go USock.Ping()
 
     // 每30sec检查流量是否超标
     go USock.HeartBeat(HEARTBEAT_FREQUENCY, func() error {
-        Ports := []int32{}
+        Ports := manager.New()
         Users := []manager.User{}
         Limits := make(map[int32]Limit)
 
@@ -58,7 +61,7 @@ func main() {
         if USock.Con.C(USER_COLLECTION).Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
                 if User.Port != 0 {
-                    Ports = append(Ports, User.Port)
+                    Ports.Add(User.Port)
                     Limits[User.Port] = Limit{
                         Password: User.Password,
                         AllowSize: User.AllowSize,
@@ -67,12 +70,12 @@ func main() {
             }
         }
 
-        if len(Ports) > 0 {
+        if !Ports.Empty() {
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
             Pipe := USock.Con.C(FLOW_COLLECTION).Pipe([]bson.M{
                 {
                     "$match": bson.M{
-                        "port": bson.M{"$in": Ports},
+                        "port": bson.M{"$in": Ports.List()},
                         "created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")},
                     },
                 },
