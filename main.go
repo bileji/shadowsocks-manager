@@ -38,6 +38,8 @@ func main() {
             panic(err)
         }
 
+        fmt.Println(Con.Session.Ping())
+
         Ports := []int32{}
         Users := []manager.User{}
 
