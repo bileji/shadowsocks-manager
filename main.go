@@ -115,10 +115,14 @@ func main() {
             }
 
             for Port, item := range Limits {
-                _, err := USock.Add(Port, string(item.Password))
-                if err == nil {
-                    ListenPorts.Add(Port)
-                    fmt.Printf("    +add: %d\r\n", Port)
+                if !ListenPorts.Has(Port) {
+                    _, err := USock.Add(Port, string(item.Password))
+                    if err == nil {
+                        ListenPorts.Add(Port)
+                        fmt.Printf("    +add: %d\r\n", Port)
+                    }
+                } else {
+                    fmt.Printf("    +lis: %d\r\n", Port)
                 }
             }
         } else {
