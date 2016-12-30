@@ -70,8 +70,8 @@ func main() {
             }
         }
 
-        for _, port := range manager.Minus(ListenPorts, Ports).List() {
-            USock.Del(port)
+        for _, Port := range manager.Minus(ListenPorts, Ports).List() {
+            USock.Del(Port)
         }
 
         if !Ports.Empty() {
@@ -93,9 +93,9 @@ func main() {
                 // todo print err info
             }
 
-            for _, item := range Resp {
-                Port := int32(item["_id"].(int))
-                AllowSize := item["total"].(float64)
+            for _, Item := range Resp {
+                Port := int32(Item["_id"].(int))
+                AllowSize := Item["total"].(float64)
                 if _, ok := Limits[Port]; !ok {
                     _, err := USock.Del(Port)
                     if err == nil {
@@ -114,11 +114,11 @@ func main() {
                 }
             }
 
-            for port, item := range Limits {
-                _, err := USock.Add(port, string(item.Password))
+            for Port, item := range Limits {
+                _, err := USock.Add(Port, string(item.Password))
                 if err == nil {
-                    ListenPorts.Add(port)
-                    fmt.Printf("    +add: %d\r\n", port)
+                    ListenPorts.Add(Port)
+                    fmt.Printf("    +add: %d\r\n", Port)
                 }
             }
         } else {
