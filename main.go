@@ -28,6 +28,11 @@ var (
 )
 
 func main() {
+    fmt.Printf("#%s\r\n", "Welcome to use ss-manager ^_^")
+    fmt.Printf("    Author: %s\r\n", "shuc324@gmail.com")
+    fmt.Printf("    Time: %s\r\n", time.Now().Format("2006-01-02 15:04:05"))
+    fmt.Printf("    Version: %s\r\n", "1.0")
+
     err, Con := manager.ConnectToMgo(MONGODB_HOST, MONGODB_DATABASE, MONGODB_USERNAME, MONGODB_PASSWORD)
 
     if err != nil {
@@ -135,11 +140,7 @@ func main() {
     go USock.Rec(func(buffer []byte) {
         M := make(map[string]interface{})
         if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") > 0 {
-            fmt.Printf("+ %s\r\n", "+++++++++++++++++++++++++++++")
-            fmt.Printf("+ %s\r\n", "Welcome to use ss-manager ^_^")
-            fmt.Printf("+ Author: %s\r\n", "shuc324@gmail.com")
-            fmt.Printf("+ Time: %s\r\n", time.Now().Format("2006-01-02 15:04:05"))
-            fmt.Printf("+ %s\r\n", "+++++++++++++++++++++++++++++")
+
         } else {
             if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
                 for k, v := range M {
