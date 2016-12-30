@@ -32,15 +32,15 @@ func main() {
     // todo每1分钟检查流量是否超标
     go USock.HeartBeat(5, func() error {
         Ports := []int32{}
-        Users := manager.User{}
+        Users := []manager.User{}
 
         UserModel := Connector.DB("vpn").C("users")
 
         if UserModel.Find(bson.M{"Port": int32(8388)}).Select(bson.M{"Port": 1}).All(&Users) == nil {
             fmt.Println(Users)
-            //for _, User := range Users {
-            //    Ports = append(Ports, User.Port)
-            //}
+            for _, User := range Users {
+                Ports = append(Ports, User.Port)
+            }
         }
 
         if len(Ports) > 0 {
