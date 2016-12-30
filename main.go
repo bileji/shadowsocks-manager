@@ -28,7 +28,7 @@ var (
 )
 
 func main() {
-    fmt.Printf("#%s\r\n", "Welcome to use ss-manager ^_^")
+    fmt.Printf("[%s] +%s\r\n", time.Now().Format("2006-01-02 15:04:05"), "Welcome to use ss-manager ^_^____")
     fmt.Printf("    Author: %s\r\n", "shuc324@gmail.com")
     fmt.Printf("    Time: %s\r\n", time.Now().Format("2006-01-02 15:04:05"))
     fmt.Printf("    Version: %s\r\n", "1.0")
