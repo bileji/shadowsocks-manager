@@ -17,7 +17,7 @@ func main() {
         panic(err)
     }
 
-    defer Con.Session.Close()
+    //defer Con.Session.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
