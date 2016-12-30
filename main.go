@@ -31,10 +31,17 @@ func main() {
 
     // todo每1分钟检查流量是否超标
     go USock.HeartBeat(5, func() error {
+
+        err, Con := manager.ConnectToMgo("127.0.0.1:27017", "vpn", "shadowsocks", "mlgR4evB")
+
+        if err != nil {
+            panic(err)
+        }
+
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := Connector.C("users")
+        UserModel := Con.C("users")
 
         if UserModel.Find(nil).Select(bson.M{"Port": 1}).All(&Users) == nil {
             fmt.Println(Users)
@@ -45,8 +52,7 @@ func main() {
 
         if len(Ports) > 0 {
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-            fmt.Println(StartTime.Format("2006-01-02 15:04:05"))
-            FlowModel := Connector.C("flows")
+            FlowModel := Con.C("flows")
             Pipe := FlowModel.Pipe([]bson.M{
                 {
                     "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
