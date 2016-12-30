@@ -38,7 +38,7 @@ func main() {
 
         fmt.Println(UserModel.Count())
 
-        if UserModel.Find(bson.M{"Status": bool(true)}).All(&Users) == nil {
+        if UserModel.Find(bson.M{"Ports": int32(8388)}).All(&Users) == nil {
             fmt.Println(Users)
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
