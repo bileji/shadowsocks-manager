@@ -171,10 +171,15 @@ func main() {
         } else {
             if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
                 for k, v := range M {
-                    switch vv := v.(type) {
+                    switch Size := v.(type) {
                     case float64:
                         Port, _ := strconv.Atoi(k)
-                        USock.SaveToDB(&manager.Flow{Port: int32(Port), Size: vv, Created: time.Now().Format("2006-01-02 15:04:05"), Modified: time.Now().Format("2006-01-02 15:04:05")})
+                        USock.SaveToDB(&manager.Flow{
+                            Port: int32(Port),
+                            Size: Size,
+                            Created: time.Now().Format("2006-01-02 15:04:05"),
+                            Modified: time.Now().Format("2006-01-02 15:04:05"),
+                        })
                     default:
                         fmt.Printf("undefined message type: %T => %T\r\n", k, v)
                     }
