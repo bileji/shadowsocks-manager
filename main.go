@@ -39,6 +39,15 @@ func main() {
 
         UserModel := USock.Con.C("users")
 
+        UserModel.Insert(&manager.User{
+            Username: "测试账号",
+            Port: 8388,
+            Status: true,
+            Password: "5dae3cdc",
+            Created: time.Now().Format("2006-01-02 15:04:05"),
+            Modified: time.Now().Format("2006-01-02 15:04:05"),
+        })
+
         fmt.Println(UserModel.Count())
 
         if UserModel.Find(nil).All(&Users) == nil {
