@@ -35,19 +35,16 @@ func main() {
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := USock.Con.C("users")
-
-        if UserModel.Find(bson.M{"status": true}).All(&Users) == nil {
-            fmt.Println(Users)
+        if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
+                fmt.Println(User.AllowSize == nil)
             }
         }
 
         if len(Ports) > 0 {
-            FlowModel := USock.Con.C("flows")
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-            Pipe := FlowModel.Pipe([]bson.M{
+            Pipe := USock.Con.C("flows").Pipe([]bson.M{
                 {
                     "$match": bson.M{"created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
                 },

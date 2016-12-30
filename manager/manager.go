@@ -9,12 +9,13 @@ import (
 )
 
 type User struct {
-    Username string
-    Port     int32
-    Status   bool
-    Password string
-    Created  string
-    Modified string
+    Username  string
+    Port      int32
+    Status    bool
+    Password  string
+    AllowSize int64
+    Created   string
+    Modified  string
 }
 
 type Flow struct {
