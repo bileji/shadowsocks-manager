@@ -76,6 +76,7 @@ func main() {
 
                 for k, v := range item {
                     fmt.Printf("undefined message type: %T => %T\r\n", k, v)
+                    fmt.Println(k, v)
                 }
                 //
                 //if _, ok := Limits[int32(item["_id"])]; ok {
