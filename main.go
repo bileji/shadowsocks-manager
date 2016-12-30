@@ -36,10 +36,12 @@ func main() {
     go USock.Ping()
 
     // todo每1分钟检查流量是否超标
-    go USock.HeartBeat(5, func() error {
+    go USock.HeartBeat(30, func() error {
         Ports := []int32{}
         Users := []manager.User{}
         Limits := make(map[int32]Limit)
+
+        fmt.Printf("+auto update %dsec-----------------------\r\n", 30)
 
         if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
@@ -76,17 +78,26 @@ func main() {
                 Port := int32(item["_id"].(int))
                 AllowSize := item["total"].(float64)
                 if _, ok := Limits[Port]; !ok {
-                    USock.Del(Port)
+                    _, err := USock.Del(Port)
+                    if err == nil {
+                        fmt.Printf("    -del: %d", Port)
+                    }
                 } else {
                     if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
-                        USock.Del(Port)
-                        delete(Limits, Port)
+                        _, err := USock.Del(Port)
+                        if err == nil {
+                            fmt.Printf("    -del: %d", Port)
+                            delete(Limits, Port)
+                        }
                     }
                 }
             }
 
             for port, item := range Limits {
-                USock.Add(port, string(item.Password))
+                _, err := USock.Add(port, string(item.Password))
+                if err == nil {
+                    fmt.Printf("    -add: %d", port)
+                }
             }
         } else {
             fmt.Println("collection users is null")
