@@ -2,7 +2,6 @@ package manager
 
 import (
     "sync"
-    "sort"
 )
 
 type Ports struct {
@@ -46,7 +45,7 @@ func (p *Ports) Remove(items... int32) {
     }
 }
 
-func (p *Ports) Has(items... int32) {
+func (p *Ports) Has(items... int32) bool {
     p.RLock()
     defer p.RUnlock()
     for _, v := range items {
@@ -76,7 +75,6 @@ func (p *Ports) List() []int32 {
     for item := range p.m {
         list = append(list, item)
     }
-    sort.Ints(list)
     return list
 }
 
