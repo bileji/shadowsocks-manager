@@ -41,9 +41,6 @@ func Header() {
     flag.Usage = func() {
         fmt.Fprintf(os.Stderr, "Welcome to use %s ^_^____\r\nOptions:\n", os.Args[0])
         flag.PrintDefaults()
-        fmt.Printf("Author: %s\r\n", "shuc324@gmail.com")
-        fmt.Printf("Time: %s\r\n", "2016-12-30 00:00:00")
-        fmt.Printf("Version: %s\r\n", "1.0")
     }
 
     flag.Int("f", HEARTBEAT_FREQUENCY, "input ur name")
