@@ -130,7 +130,7 @@ func main() {
                         Port, _ := strconv.Atoi(k)
                         USock.SaveToDB(&manager.Flow{Port: int32(Port), Size: vv, Created: time.Now().Format("2006-01-02 15:04:05"), Modified: time.Now().Format("2006-01-02 15:04:05")})
                     default:
-                        fmt.Printf("undefined message type: %T => %T", k, v)
+                        fmt.Printf("undefined message type: %T => %T\r\n", k, v)
                     }
                 }
             }
