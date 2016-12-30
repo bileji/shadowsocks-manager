@@ -73,44 +73,21 @@ func main() {
             }
 
             for _, item := range Resp {
-                //for k, v := range item {
-                //    switch v.(type) {
-                //    case int, int32:
-                //        fmt.Println("port:", v.(int))
-                //    case float64:
-                //        fmt.Println("flow:", v.(float64))
-                //    }
-                //    fmt.Printf("undefined message type: %T => %T\r\n", k, v)
-                //}
-
-
-
-                //if v, ok := item["_id"].(); ok {
-                //    Port, _ := v.(int);
-                //}
-                //
-                //if v, ok := item["total"]; ok {
-                //    AllowSize, _ := v.(float64);
-                //}
-
-                //if Port && AllowSize {
-                    fmt.Println(item["_id"].(int), item["total"].(float64))
-                //}
-
-                //
-                //if _, ok := Limits[int32(item["_id"])]; ok {
-                //    if Limits[int32(item["_id"])].AllowSize != int64(0) && Limits[int32(item["_id"])].AllowSize < item["total"] {
-                //        USock.Del(int32(item["_id"]))
-                //        delete(Limits, int32(item["_id"]))
-                //    }
-                //} else {
-                //    USock.Del(int32(item["_id"]))
-                //}
+                Port := int32(item["_id"].(int))
+                AllowSize := item["total"].(float64)
+                if _, ok := Limits[Port]; !ok {
+                    USock.Del(Port)
+                } else {
+                    if Limits[Port].AllowSize != int64(0) && Limits[Port].AllowSize < AllowSize {
+                        USock.Del(Port)
+                        delete(Limits, Port)
+                    }
+                }
             }
 
-            //for port, item := range Limits {
-            //    USock.Add(port, string(item.Password))
-            //}
+            for port, item := range Limits {
+                USock.Add(port, string(item.Password))
+            }
         } else {
             fmt.Println("collection users is null")
         }
