@@ -11,21 +11,20 @@ import (
 )
 
 func main() {
-    err, Connector := manager.ConnectToMgo("127.0.0.1:27017", "vpn", "shadowsocks", "mlgR4evB")
+    err, Con := manager.ConnectToMgo("127.0.0.1:27017", "vpn", "shadowsocks", "mlgR4evB")
 
     if err != nil {
         panic(err)
     }
 
-    fmt.Println(Connector.Session, 1)
-
-    defer Connector.Session.Close()
+    defer Con.Session.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
-        Collection: Connector.C("flows"),
+        Con: Con,
+        Collection: "flows",
     }
 
     USock.Listen()
@@ -36,7 +35,7 @@ func main() {
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := USock.Collection
+        UserModel := USock.Con.C("users")
 
         if UserModel.Find(nil).All(&Users) == nil {
             fmt.Println(Users)

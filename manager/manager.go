@@ -29,7 +29,8 @@ type UnixSock struct {
     LSock      string
     RSock      string
     UConn      *net.UnixConn
-    Collection *mgo.Collection
+    Con        *mgo.Database
+    Collection string
 }
 
 func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
@@ -100,6 +101,6 @@ func (us *UnixSock) HeartBeat(spec int, fn func() error) error {
 
 // DB相关
 func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
-    err = us.Collection.Insert(flow)
+    err = us.Con.C(us.Collection).Insert(flow)
     return err
 }
