@@ -44,10 +44,10 @@ func GetArgs() *Options {
     }
 
     DBHost := flag.String("host", MONGODB_HOST, "mongodb host:port")
-    DBName := flag.String("db", MONGODB_DATABASE, "db name")
-    Username := flag.String("u", MONGODB_USERNAME, "db's username")
-    Pwd := flag.String("p", MONGODB_PASSWORD, "db's password")
-    Fq := flag.Int("fq", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
+    DBName := flag.String("db_name", MONGODB_DATABASE, "db name")
+    Username := flag.String("username", MONGODB_USERNAME, "db's username")
+    Pwd := flag.String("password", MONGODB_PASSWORD, "db's password")
+    Heartbeat := flag.Int("heartbeat", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
 
     flag.Parse()
     return &Options{
@@ -55,7 +55,7 @@ func GetArgs() *Options {
         DBName: *DBName,
         DBUsername: *Username,
         DBPassword: *Pwd,
-        HeartbeatFrequency: *Fq,
+        HeartbeatFrequency: *Heartbeat,
     }
 }
 
