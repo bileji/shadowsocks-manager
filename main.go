@@ -34,11 +34,14 @@ func main() {
     go USock.HeartBeat(5, func() error {
         Ports := []int32{}
         Users := []manager.User{}
+        PortLimit := make(map[int32]int64)
 
         if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
-                Ports = append(Ports, User.Port)
-                fmt.Println(User.AllowSize)
+                if User.Port != 0 {
+                    Ports = append(Ports, User.Port)
+                    PortLimit[User.Port] = User.AllowSize
+                }
             }
         }
 
@@ -46,7 +49,10 @@ func main() {
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
             Pipe := USock.Con.C("flows").Pipe([]bson.M{
                 {
-                    "$match": bson.M{"created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
+                    "$match": bson.M{
+                        "port": bson.M{"$in": Ports},
+                        "created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")},
+                    },
                 },
                 {
                     "$group": bson.M{"_id": "$port", "total": bson.M{"$sum": "$size"}},
