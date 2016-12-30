@@ -11,7 +11,7 @@ import (
 )
 
 type Limit struct {
-    AllowSize int64
+    AllowSize float64
     Password  string
 }
 
