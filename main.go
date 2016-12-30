@@ -35,7 +35,7 @@ func main() {
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := USock.Con.C("users")
+        UserModel := USock.Con.C("flows")
 
         if UserModel.Find(nil).All(&Users) == nil {
             fmt.Println(Users)
