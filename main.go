@@ -11,7 +11,7 @@ import (
 )
 
 type Limit struct {
-    AllowSize int32
+    AllowSize int64
     Password  string
 }
 
@@ -73,18 +73,18 @@ func main() {
             }
 
             for _, item := range Resp {
-                if _, ok := Limits[item["_id"]]; ok {
-                    if Limits[item["_id"]].AllowSize != int64(0) && Limits[item["_id"]].AllowSize < item["total"] {
-                        USock.Del(item["_id"])
-                        delete(Limits, item["_id"])
+                if _, ok := Limits[int32(item["_id"])]; ok {
+                    if Limits[int32(item["_id"])].AllowSize != int64(0) && Limits[int32(item["_id"])].AllowSize < item["total"] {
+                        USock.Del(int32(item["_id"]))
+                        delete(Limits, int32(item["_id"]))
                     }
                 } else {
-                    USock.Del(item["_id"])
+                    USock.Del(int32(item["_id"]))
                 }
             }
 
             for port, item := range Limits {
-                USock.Add(port, item.Password)
+                USock.Add(port, string(item.Password))
             }
         } else {
             fmt.Println("collection users is null")
