@@ -45,7 +45,7 @@ func main() {
     }
 
     // 正在监听的端口
-    //ListenPorts := manager.New()
+    ListenPorts := manager.New()
 
     USock.Listen()
     go USock.Ping()
@@ -68,6 +68,10 @@ func main() {
                     }
                 }
             }
+        }
+
+        for _, port := range manager.Minus(ListenPorts, Ports).List() {
+            USock.Del(port)
         }
 
         if !Ports.Empty() {
@@ -95,12 +99,14 @@ func main() {
                 if _, ok := Limits[Port]; !ok {
                     _, err := USock.Del(Port)
                     if err == nil {
+                        ListenPorts.Remove(Port)
                         fmt.Printf("    -del: %d\r\n", Port)
                     }
                 } else {
                     if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
                         _, err := USock.Del(Port)
                         if err == nil {
+                            ListenPorts.Remove(Port)
                             fmt.Printf("    -del: %d\r\n", Port)
                             delete(Limits, Port)
                         }
@@ -111,6 +117,7 @@ func main() {
             for port, item := range Limits {
                 _, err := USock.Add(port, string(item.Password))
                 if err == nil {
+                    ListenPorts.Add(port)
                     fmt.Printf("    +add: %d\r\n", port)
                 }
             }
