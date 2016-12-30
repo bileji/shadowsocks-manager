@@ -22,16 +22,6 @@ func main() {
         panic(err)
     }
 
-    Con.C("users").Insert(manager.User{
-        Username: "邓羽浩",
-        Port: 8390,
-        Status: true,
-        Password:"5dae3cdc",
-        AllowSize: 1000000,
-        Created: time.Now().Format("2006-01-02 15:04:05"),
-        Modified: time.Now().Format("2006-01-02 15:04:05"),
-    })
-
     defer Con.Session.Close()
 
     USock := manager.UnixSock{
