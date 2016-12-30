@@ -80,13 +80,13 @@ func main() {
                 if _, ok := Limits[Port]; !ok {
                     _, err := USock.Del(Port)
                     if err == nil {
-                        fmt.Printf("    -del: %d", Port)
+                        fmt.Printf("    -del: %d\r\n", Port)
                     }
                 } else {
                     if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
                         _, err := USock.Del(Port)
                         if err == nil {
-                            fmt.Printf("    -del: %d", Port)
+                            fmt.Printf("    -del: %d\r\n", Port)
                             delete(Limits, Port)
                         }
                     }
@@ -96,7 +96,7 @@ func main() {
             for port, item := range Limits {
                 _, err := USock.Add(port, string(item.Password))
                 if err == nil {
-                    fmt.Printf("    -add: %d", port)
+                    fmt.Printf("    -add: %d\r\n", port)
                 }
             }
         } else {
