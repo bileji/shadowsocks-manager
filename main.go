@@ -36,7 +36,7 @@ func main() {
 
         UserModel := Connector.DB("vpn").C("users")
 
-        if UserModel.Find(bson.M{"Port": int32(8388)}).All(&Users) == nil {
+        if UserModel.Find(bson.M{"Port": int32(8388)}).Select(bson.M{"Port": 1}).All(&Users) == nil {
             fmt.Println(Users)
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
