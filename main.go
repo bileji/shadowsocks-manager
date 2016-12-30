@@ -73,8 +73,6 @@ func main() {
             }
 
             for _, item := range Resp {
-                var Port int
-                var AllowSize float64
                 //for k, v := range item {
                 //    switch v.(type) {
                 //    case int, int32:
@@ -85,21 +83,19 @@ func main() {
                 //    fmt.Printf("undefined message type: %T => %T\r\n", k, v)
                 //}
 
-                if v, ok := item["_id"]; ok {
-                    if _, ok := v.(int); ok {
-                        Port = v.(int)
-                    }
-                }
 
-                if v, ok := item["total"]; ok {
-                    if _, ok := v.(float64); ok {
-                        AllowSize = v.(float64)
-                    }
-                }
 
-                if Port && AllowSize {
-                    fmt.Println(Port, AllowSize)
-                }
+                //if v, ok := item["_id"].(); ok {
+                //    Port, _ := v.(int);
+                //}
+                //
+                //if v, ok := item["total"]; ok {
+                //    AllowSize, _ := v.(float64);
+                //}
+
+                //if Port && AllowSize {
+                    fmt.Println(item["_id"].(int), item["total"].(float64))
+                //}
 
                 //
                 //if _, ok := Limits[int32(item["_id"])]; ok {
