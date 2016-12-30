@@ -17,7 +17,7 @@ func main() {
         panic(err)
     }
 
-    fmt.Println(Connector.Session.Ping(), 1)
+    fmt.Println(Connector.Session, 1)
 
     defer Connector.Session.Close()
 
@@ -40,7 +40,7 @@ func main() {
             panic(err)
         }
 
-        fmt.Println(Con.Session.Ping(), 2)
+        fmt.Println(Con.Session, 2)
 
         Ports := []int32{}
         Users := []manager.User{}
