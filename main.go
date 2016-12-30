@@ -75,11 +75,11 @@ func main() {
             for _, item := range Resp {
 
                 for k, v := range item {
-                    switch vv := v.(type) {
+                    switch v.(type) {
                     case int, int32:
-                        fmt.Println("port:", int32(vv))
+                        fmt.Println("port:", v.(int32))
                     case float64:
-                        fmt.Println("flow:", float64(vv))
+                        fmt.Println("flow:", v.(float64))
                     }
                     fmt.Printf("undefined message type: %T => %T\r\n", k, v)
                 }
