@@ -120,11 +120,9 @@ func main() {
     // 监听各端口流量情况
     go USock.Rec(func(buffer []byte) {
         M := make(map[string]interface{})
-        if Message := strings.TrimLeft(string(buffer), "stat: "); strings.EqualFold(Message, "pong") {
+        if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") == 1 {
             fmt.Println("start the program: shadowsocks-manager")
         } else {
-            fmt.Println(Message, strings.Compare(Message, "pong"), strings.EqualFold(Message, "pong"))
-
             if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
                 for k, v := range M {
                     switch vv := v.(type) {
