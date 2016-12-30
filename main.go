@@ -38,23 +38,19 @@ var (
 )
 
 func Header() {
-    //fmt.Printf("[%s] +%s\r\n", time.Now().Format("2006-01-02 15:04:05"), "welcome to use ss-manager ^_^____")
-    //fmt.Printf("    author: %s\r\n", "shuc324@gmail.com")
-    //fmt.Printf("    time: %s\r\n", "2016-12-30 00:00:00")
-    //fmt.Printf("    version: %s\r\n", "1.0")
-
     flag.Usage = func() {
-        fmt.Fprintf(os.Stderr, "Welcome to use ss-manager ^_^____\r\n\r\n" +
-            "Usage: %s -h | [-f FREQUENCY] [-h DB_HOST] [-d DB_NAME] [-u USERNAME] [-p PASSWORD]\r\n" +
-            "Options:\n", os.Args[0])
+        fmt.Fprintf(os.Stderr, "Welcome to use %s ^_^____\r\nOptions:\n", os.Args[0])
         flag.PrintDefaults()
+        fmt.Printf("Author: %s\r\n", "shuc324@gmail.com")
+        fmt.Printf("Time: %s\r\n", "2016-12-30 00:00:00")
+        fmt.Printf("Version: %s\r\n", "1.0")
     }
 
-    flag.Int("f", 30, "input ur name")
-    flag.String("h", "127.0.0.1:27017", "mongodb host:port")
-    flag.String("d", "vpn", "mongodb database name")
-    flag.String("u", "shadowsocks", "you selected db's username")
-    flag.String("p", "mlgR4evB", "you selected db's password")
+    flag.Int("f", HEARTBEAT_FREQUENCY, "input ur name")
+    flag.String("host", MONGODB_HOST, "mongodb host:port")
+    flag.String("db", MONGODB_DATABASE, "mongodb database name")
+    flag.String("u", MONGODB_USERNAME, "you selected db's username")
+    flag.String("p", MONGODB_PASSWORD, "you selected db's password")
 
     flag.Parse()
     //return &Options{
