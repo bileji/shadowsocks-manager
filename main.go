@@ -18,8 +18,8 @@ func main() {
         panic(err)
     }
 
-    Con.Session.SetMode(mgo.Monotonic, true)
-    //defer Con.Session.Close()
+    //Con.Session.SetMode(mgo.Monotonic, true)
+    defer Con.Session.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
