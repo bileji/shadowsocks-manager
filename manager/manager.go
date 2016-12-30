@@ -3,6 +3,7 @@ package manager
 import (
     "os"
     "net"
+    "fmt"
     "strconv"
     "gopkg.in/mgo.v2"
     "github.com/noaway/heartbeat"
@@ -101,5 +102,10 @@ func (us *UnixSock) HeartBeat(spec int, fn func() error) error {
 // DB相关
 func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
     err = us.Collection.Insert(flow)
+
+    result := Flow{}
+    us.Collection.Find(nil).One(&result)
+    fmt.Println(result)
+
     return err
 }
