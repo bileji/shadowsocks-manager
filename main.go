@@ -39,6 +39,8 @@ func main() {
 
         UserModel := USock.Con.C("users")
 
+        fmt.Println(UserModel.Count())
+
         if UserModel.Find(nil).All(&Users) == nil {
             fmt.Println(Users)
             for _, User := range Users {
