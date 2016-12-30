@@ -41,7 +41,7 @@ func main() {
         Users := []manager.User{}
         Limits := make(map[int32]Limit)
 
-        fmt.Printf("+auto update %dsec-----------------------\r\n", 30)
+        fmt.Printf("%s : +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), 30)
 
         if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
