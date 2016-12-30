@@ -33,21 +33,12 @@ func main() {
 
     // todo每1分钟检查流量是否超标
     go USock.HeartBeat(5, func() error {
-
-        err, Con := manager.ConnectToMgo("127.0.0.1:27017", "vpn", "shadowsocks", "mlgR4evB")
-
-        if err != nil {
-            panic(err)
-        }
-
-        fmt.Println(Con.Session, 2)
-
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := Con.C("users")
+        UserModel := USock.Collection
 
-        if UserModel.Find(nil).Select(bson.M{"Port": 1}).All(&Users) == nil {
+        if UserModel.Find(nil).All(&Users) == nil {
             fmt.Println(Users)
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
@@ -55,23 +46,23 @@ func main() {
         }
 
         if len(Ports) > 0 {
-            StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-            FlowModel := Con.C("flows")
-            Pipe := FlowModel.Pipe([]bson.M{
-                {
-                    "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
-                },
-                {
-                    "$group": bson.M{"_id": "$Port", "total": bson.M{"$sum": "$Size"}},
-                },
-            })
-
-            Resp := []bson.M{}
-            if Pipe.All(&Resp) != nil {
-                // todo print err info
-            }
-
-            fmt.Println(Resp)
+            //StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+            //FlowModel := Con.C("flows")
+            //Pipe := FlowModel.Pipe([]bson.M{
+            //    {
+            //        "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
+            //    },
+            //    {
+            //        "$group": bson.M{"_id": "$Port", "total": bson.M{"$sum": "$Size"}},
+            //    },
+            //})
+            //
+            //Resp := []bson.M{}
+            //if Pipe.All(&Resp) != nil {
+            //    // todo print err info
+            //}
+            //
+            //fmt.Println(Resp)
         } else {
             fmt.Println("collection users is null")
         }
