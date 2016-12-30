@@ -13,7 +13,7 @@ type User struct {
     Port      int32
     Status    bool
     Password  string
-    AllowSize int64
+    AllowSize float64
     Created   string
     Modified  string
 }
