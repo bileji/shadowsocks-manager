@@ -8,6 +8,7 @@ import (
     "encoding/json"
     "shadowsocks-manager/manager"
     //"gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
         panic(err)
     }
 
+    Con.Session.SetMode(mgo.Monotonic, true)
     //defer Con.Session.Close()
 
     USock := manager.UnixSock{
@@ -35,7 +37,7 @@ func main() {
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := USock.Con.C("flows")
+        UserModel := USock.Con.C("users")
 
         if UserModel.Find(nil).All(&Users) == nil {
             fmt.Println(Users)
