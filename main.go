@@ -73,14 +73,22 @@ func main() {
             }
 
             for _, item := range Resp {
-                if _, ok := Limits[int32(item["_id"])]; ok {
-                    if Limits[int32(item["_id"])].AllowSize != int64(0) && Limits[int32(item["_id"])].AllowSize < item["total"] {
-                        USock.Del(int32(item["_id"]))
-                        delete(Limits, int32(item["_id"]))
-                    }
-                } else {
-                    USock.Del(int32(item["_id"]))
-                }
+                fmt.Printf("undefined message type: %T => %T", item["_id"], item["total"])
+
+                //for k, v := range item {
+                //    switch vv = v.(type) {
+                //    case
+                //    }
+                //}
+                //
+                //if _, ok := Limits[int32(item["_id"])]; ok {
+                //    if Limits[int32(item["_id"])].AllowSize != int64(0) && Limits[int32(item["_id"])].AllowSize < item["total"] {
+                //        USock.Del(int32(item["_id"]))
+                //        delete(Limits, int32(item["_id"]))
+                //    }
+                //} else {
+                //    USock.Del(int32(item["_id"]))
+                //}
             }
 
             for port, item := range Limits {
