@@ -27,18 +27,20 @@ var (
     HEARTBEAT_FREQUENCY = 30
 )
 
+func Header()  {
+    fmt.Printf("[%s] +%s\r\n", time.Now().Format("2006-01-02 15:04:05"), "welcome to use ss-manager ^_^____")
+    fmt.Printf("    author: %s\r\n", "shuc324@gmail.com")
+    fmt.Printf("    time: %s\r\n", "2016-12-30 00:00:00")
+    fmt.Printf("    version: %s\r\n", "1.0")
+}
+
 func main() {
-    fmt.Printf("[%s] +%s\r\n", time.Now().Format("2006-01-02 15:04:05"), "Welcome to use ss-manager ^_^____")
-    fmt.Printf("    Author: %s\r\n", "shuc324@gmail.com")
-    fmt.Printf("    Time: %s\r\n", time.Now().Format("2006-01-02 15:04:05"))
-    fmt.Printf("    Version: %s\r\n", "1.0")
+    go Header()
 
     err, Con := manager.ConnectToMgo(MONGODB_HOST, MONGODB_DATABASE, MONGODB_USERNAME, MONGODB_PASSWORD)
-
     if err != nil {
         panic(err)
     }
-
     defer Con.Session.Close()
 
     USock := manager.UnixSock{
