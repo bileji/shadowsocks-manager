@@ -44,14 +44,17 @@ func Header() {
     //fmt.Printf("    version: %s\r\n", "1.0")
 
     flag.Usage = func() {
-        fmt.Fprintf(os.Stderr, "Usage: %s -h | [-f FREQUENCY] [-h DB_HOST] [-d DB_NAME] [-u USERNAME] [-p PASSWORD]\n\n" +
-            "Welcome to use ss-manager ^_^____\r\n\r\n" +
+        fmt.Fprintf(os.Stderr, "Welcome to use ss-manager ^_^____\r\n\r\n" +
+            "Usage: %s -h | [-f FREQUENCY] [-h DB_HOST] [-d DB_NAME] [-u USERNAME] [-p PASSWORD]\r\n" +
             "Options:\n", os.Args[0])
         flag.PrintDefaults()
     }
 
-    flag.String("name", "gerry", "input ur name")
-    flag.String("age", "30", "input ur age")
+    flag.Int("f", 30, "input ur name")
+    flag.String("h", "127.0.0.1:27017", "mongodb host:port")
+    flag.String("d", "vpn", "mongodb database name")
+    flag.String("u", "shadowsocks", "you selected db's username")
+    flag.String("p", "mlgR4evB", "you selected db's password")
 
     flag.Parse()
     //return &Options{
