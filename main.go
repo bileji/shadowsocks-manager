@@ -17,7 +17,9 @@ func main() {
         panic(err)
     }
 
-    //defer Connector.Close()
+    fmt.Println(Connector.Session.Ping(), 1)
+
+    defer Connector.Session.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
@@ -38,7 +40,7 @@ func main() {
             panic(err)
         }
 
-        fmt.Println(Con.Session.Ping())
+        fmt.Println(Con.Session.Ping(), 2)
 
         Ports := []int32{}
         Users := []manager.User{}
