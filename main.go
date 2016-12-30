@@ -78,7 +78,7 @@ func main() {
                 if _, ok := Limits[Port]; !ok {
                     USock.Del(Port)
                 } else {
-                    if Limits[Port].AllowSize != int64(0) && Limits[Port].AllowSize < AllowSize {
+                    if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
                         USock.Del(Port)
                         delete(Limits, Port)
                     }
