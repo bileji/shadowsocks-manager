@@ -10,6 +10,11 @@ import (
     "gopkg.in/mgo.v2/bson"
 )
 
+type Limit struct {
+    AllowSize int32
+    Password  string
+}
+
 func main() {
     err, Con := manager.ConnectToMgo("127.0.0.1:27017", "vpn", "shadowsocks", "mlgR4evB")
 
@@ -34,13 +39,16 @@ func main() {
     go USock.HeartBeat(5, func() error {
         Ports := []int32{}
         Users := []manager.User{}
-        PortLimit := make(map[int32]int64)
+        Limits := make(map[int32]Limit)
 
         if USock.Con.C("users").Find(bson.M{"status": true}).All(&Users) == nil {
             for _, User := range Users {
                 if User.Port != 0 {
                     Ports = append(Ports, User.Port)
-                    PortLimit[User.Port] = User.AllowSize
+                    Limits[User.Port] = Limit{
+                        Password: User.Password,
+                        AllowSize: User.AllowSize,
+                    }
                 }
             }
         }
@@ -64,7 +72,20 @@ func main() {
                 // todo print err info
             }
 
-            fmt.Println(Resp)
+            for _, item := range Resp {
+                if _, ok := Limits[item["_id"]]; ok {
+                    if Limits[item["_id"]].AllowSize != int64(0) && Limits[item["_id"]].AllowSize < item["total"] {
+                        USock.Del(item["_id"])
+                        delete(Limits, item["_id"])
+                    }
+                } else {
+                    USock.Del(item["_id"])
+                }
+            }
+
+            for port, item := range Limits {
+                USock.Add(port, item.Password)
+            }
         } else {
             fmt.Println("collection users is null")
         }
