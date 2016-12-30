@@ -96,7 +96,7 @@ func main() {
             for port, item := range Limits {
                 _, err := USock.Add(port, string(item.Password))
                 if err == nil {
-                    fmt.Printf("    -add: %d\r\n", port)
+                    fmt.Printf("    +add: %d\r\n", port)
                 }
             }
         } else {
