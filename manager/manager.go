@@ -3,7 +3,6 @@ package manager
 import (
     "os"
     "net"
-    "fmt"
     "strconv"
     "gopkg.in/mgo.v2"
     "github.com/noaway/heartbeat"
@@ -33,7 +32,7 @@ type UnixSock struct {
     Collection *mgo.Collection
 }
 
-func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Session) {
+func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
     session, err := mgo.Dial(host)
     if err != nil {
         return err, nil
@@ -43,7 +42,7 @@ func ConnectToMgo(host string, db string, username string, password string) (err
     if err != nil {
         return err, nil
     }
-    return nil, session
+    return nil, session.DB(db)
 }
 
 func (us *UnixSock) Listen() {
@@ -102,10 +101,5 @@ func (us *UnixSock) HeartBeat(spec int, fn func() error) error {
 // DB相关
 func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
     err = us.Collection.Insert(flow)
-
-    result := Flow{}
-    us.Collection.Find(nil).One(&result)
-    fmt.Println(result)
-
     return err
 }

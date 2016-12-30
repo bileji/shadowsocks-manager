@@ -17,13 +17,13 @@ func main() {
         panic(err)
     }
 
-    defer Connector.Close()
+    //defer Connector.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
-        Collection: Connector.DB("vpn").C("flows"),
+        Collection: Connector.C("flows"),
     }
 
     USock.Listen()
@@ -34,7 +34,7 @@ func main() {
         Ports := []int32{}
         Users := []manager.User{}
 
-        UserModel := Connector.DB("vpn").C("users")
+        UserModel := Connector.C("users")
 
         if UserModel.Find(nil).Select(bson.M{"Port": 1}).All(&Users) == nil {
             fmt.Println(Users)
@@ -46,7 +46,7 @@ func main() {
         if len(Ports) > 0 {
             StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
             fmt.Println(StartTime.Format("2006-01-02 15:04:05"))
-            FlowModel := Connector.DB("vpn").C("flows")
+            FlowModel := Connector.C("flows")
             Pipe := FlowModel.Pipe([]bson.M{
                 {
                     "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
