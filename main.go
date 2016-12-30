@@ -8,11 +8,21 @@ import (
     "encoding/json"
     "shadowsocks-manager/manager"
     "gopkg.in/mgo.v2/bson"
+    "flag"
+    "os"
 )
 
 type Limit struct {
     AllowSize float64
     Password  string
+}
+
+type Options struct {
+    DBHost             string
+    DBName             string
+    DBUsername         string
+    DBPassword         string
+    HeartbeatFrequency int
 }
 
 var (
@@ -27,11 +37,26 @@ var (
     HEARTBEAT_FREQUENCY = 30
 )
 
-func Header()  {
-    fmt.Printf("[%s] +%s\r\n", time.Now().Format("2006-01-02 15:04:05"), "welcome to use ss-manager ^_^____")
-    fmt.Printf("    author: %s\r\n", "shuc324@gmail.com")
-    fmt.Printf("    time: %s\r\n", "2016-12-30 00:00:00")
-    fmt.Printf("    version: %s\r\n", "1.0")
+func Header() {
+    //fmt.Printf("[%s] +%s\r\n", time.Now().Format("2006-01-02 15:04:05"), "welcome to use ss-manager ^_^____")
+    //fmt.Printf("    author: %s\r\n", "shuc324@gmail.com")
+    //fmt.Printf("    time: %s\r\n", "2016-12-30 00:00:00")
+    //fmt.Printf("    version: %s\r\n", "1.0")
+
+    flag.Usage = func() {
+        fmt.Fprintf(os.Stderr, "Usage: %s -h | [-f FREQUENCY] [-h DB_HOST] [-d DB_NAME] [-u USERNAME] [-p PASSWORD]\n\n" +
+            "Welcome to use ss-manager ^_^____\r\n\r\n" +
+            "Options:\n", os.Args[0])
+        flag.PrintDefaults()
+    }
+
+    flag.String("name", "gerry", "input ur name")
+    flag.String("age", "30", "input ur age")
+
+    flag.Parse()
+    return &Options{
+
+    }
 }
 
 func main() {
