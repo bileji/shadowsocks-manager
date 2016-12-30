@@ -7,7 +7,7 @@ import (
     "strings"
     "encoding/json"
     "shadowsocks-manager/manager"
-    //"gopkg.in/mgo.v2/bson"
+    "gopkg.in/mgo.v2/bson"
 )
 
 func main() {
@@ -17,7 +17,6 @@ func main() {
         panic(err)
     }
 
-    //Con.Session.SetMode(mgo.Monotonic, true)
     defer Con.Session.Close()
 
     USock := manager.UnixSock{
@@ -38,18 +37,7 @@ func main() {
 
         UserModel := USock.Con.C("users")
 
-        UserModel.Insert(&manager.User{
-            Username: "测试账号",
-            Port: 8388,
-            Status: true,
-            Password: "5dae3cdc",
-            Created: time.Now().Format("2006-01-02 15:04:05"),
-            Modified: time.Now().Format("2006-01-02 15:04:05"),
-        })
-
-        fmt.Println(UserModel.Count())
-
-        if UserModel.Find(nil).All(&Users) == nil {
+        if UserModel.Find(bson.M{"status": true}).All(&Users) == nil {
             fmt.Println(Users)
             for _, User := range Users {
                 Ports = append(Ports, User.Port)
@@ -57,23 +45,23 @@ func main() {
         }
 
         if len(Ports) > 0 {
-            //StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-            //FlowModel := Con.C("flows")
-            //Pipe := FlowModel.Pipe([]bson.M{
-            //    {
-            //        "$match": bson.M{"Created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
-            //    },
-            //    {
-            //        "$group": bson.M{"_id": "$Port", "total": bson.M{"$sum": "$Size"}},
-            //    },
-            //})
-            //
-            //Resp := []bson.M{}
-            //if Pipe.All(&Resp) != nil {
-            //    // todo print err info
-            //}
-            //
-            //fmt.Println(Resp)
+            FlowModel := USock.Con.C("flows")
+            StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+            Pipe := FlowModel.Pipe([]bson.M{
+                {
+                    "$match": bson.M{"created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")}},
+                },
+                {
+                    "$group": bson.M{"_id": "$port", "total": bson.M{"$sum": "$size"}},
+                },
+            })
+
+            Resp := []bson.M{}
+            if Pipe.All(&Resp) != nil {
+                // todo print err info
+            }
+
+            fmt.Println(Resp)
         } else {
             fmt.Println("collection users is null")
         }
