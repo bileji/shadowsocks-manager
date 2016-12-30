@@ -43,11 +43,11 @@ func Header() {
         flag.PrintDefaults()
     }
 
-    flag.Int("f", HEARTBEAT_FREQUENCY, "input ur name")
     flag.String("host", MONGODB_HOST, "mongodb host:port")
-    flag.String("db", MONGODB_DATABASE, "mongodb database name")
-    flag.String("u", MONGODB_USERNAME, "you selected db's username")
-    flag.String("p", MONGODB_PASSWORD, "you selected db's password")
+    flag.String("db", MONGODB_DATABASE, "db name")
+    flag.String("u", MONGODB_USERNAME, "db's username")
+    flag.String("p", MONGODB_PASSWORD, "db's password")
+    flag.Int("fq", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
 
     flag.Parse()
     //return &Options{
