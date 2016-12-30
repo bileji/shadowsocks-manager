@@ -54,9 +54,9 @@ func Header() {
     flag.String("age", "30", "input ur age")
 
     flag.Parse()
-    return &Options{
-
-    }
+    //return &Options{
+    //
+    //}
 }
 
 func main() {
