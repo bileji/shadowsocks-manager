@@ -77,7 +77,7 @@ func main() {
                 for k, v := range item {
                     switch v.(type) {
                     case int, int32:
-                        fmt.Println("port:", v.(int32))
+                        fmt.Println("port:", v.(int))
                     case float64:
                         fmt.Println("flow:", v.(float64))
                     }
