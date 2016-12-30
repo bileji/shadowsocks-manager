@@ -73,13 +73,10 @@ func main() {
             }
 
             for _, item := range Resp {
-                fmt.Printf("undefined message type: %T => %T", item["_id"], item["total"])
 
-                //for k, v := range item {
-                //    switch vv = v.(type) {
-                //    case
-                //    }
-                //}
+                for k, v := range item {
+                    fmt.Printf("undefined message type: %T => %T", k, v)
+                }
                 //
                 //if _, ok := Limits[int32(item["_id"])]; ok {
                 //    if Limits[int32(item["_id"])].AllowSize != int64(0) && Limits[int32(item["_id"])].AllowSize < item["total"] {
@@ -91,9 +88,9 @@ func main() {
                 //}
             }
 
-            for port, item := range Limits {
-                USock.Add(port, string(item.Password))
-            }
+            //for port, item := range Limits {
+            //    USock.Add(port, string(item.Password))
+            //}
         } else {
             fmt.Println("collection users is null")
         }
