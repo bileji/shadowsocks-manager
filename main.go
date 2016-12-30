@@ -75,8 +75,13 @@ func main() {
             for _, item := range Resp {
 
                 for k, v := range item {
+                    switch vv := v.(type) {
+                    case int, int32:
+                        fmt.Println("port:", vv)
+                    case float64:
+                        fmt.Println("flow:", vv)
+                    }
                     fmt.Printf("undefined message type: %T => %T\r\n", k, v)
-                    fmt.Println(k, v)
                 }
                 //
                 //if _, ok := Limits[int32(item["_id"])]; ok {
