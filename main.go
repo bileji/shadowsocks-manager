@@ -73,16 +73,34 @@ func main() {
             }
 
             for _, item := range Resp {
+                var Port int
+                var AllowSize float64
+                //for k, v := range item {
+                //    switch v.(type) {
+                //    case int, int32:
+                //        fmt.Println("port:", v.(int))
+                //    case float64:
+                //        fmt.Println("flow:", v.(float64))
+                //    }
+                //    fmt.Printf("undefined message type: %T => %T\r\n", k, v)
+                //}
 
-                for k, v := range item {
-                    switch v.(type) {
-                    case int, int32:
-                        fmt.Println("port:", v.(int))
-                    case float64:
-                        fmt.Println("flow:", v.(float64))
+                if v, ok := item["_id"]; ok {
+                    if _, ok := v.(int); ok {
+                        Port = v.(int)
                     }
-                    fmt.Printf("undefined message type: %T => %T\r\n", k, v)
                 }
+
+                if v, ok := item["total"]; ok {
+                    if _, ok := v.(float64); ok {
+                        AllowSize = v.(float64)
+                    }
+                }
+
+                if Port && AllowSize {
+                    fmt.Println(Port, AllowSize)
+                }
+
                 //
                 //if _, ok := Limits[int32(item["_id"])]; ok {
                 //    if Limits[int32(item["_id"])].AllowSize != int64(0) && Limits[int32(item["_id"])].AllowSize < item["total"] {
