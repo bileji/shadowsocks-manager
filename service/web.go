@@ -28,6 +28,7 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 
     r.ParseForm()
     if r.Method == "POST" {
+        fmt.Println(r.PostFormValue("port"))
         fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
 
         result, _ := ioutil.ReadAll(r.Body)
