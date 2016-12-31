@@ -146,7 +146,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
         Port           int32
         StartTimestamp string
         EndTimestamp   string
-        Limit          int32
+        Limit          int
     }
 
     if r.Method == "POST" {
@@ -156,7 +156,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
             Port: int32(P),
             StartTimestamp: r.PostFormValue("start_timestamp"),
             EndTimestamp: r.PostFormValue("end_timestamp"),
-            Limit: int32(L),
+            Limit: int(L),
         }
 
         if Params.Limit == int32(0) {
