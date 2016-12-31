@@ -169,15 +169,15 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
 
             Static := make(map[string]interface{})
 
-            Static["list"] = []One{}
+            Static["list"] = make([]One, 1000)
             Static["total"] = float64(0)
             for _, Item := range Resp {
                 Rec := One{}
                 if _, ok := Item["size"]; ok {
-                    Rec.Size = Item["size"]
+                    Rec.Size = Item["size"].(float64)
                 }
                 if _, ok := Item["created"]; ok {
-                    Rec.TimeStamp = Item["created"]
+                    Rec.TimeStamp = Item["created"].(string)
                 }
                 Static["total"] += Rec.Size
                 Static["list"] = append(Static["list"], Rec)
