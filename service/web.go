@@ -212,7 +212,56 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-// todo 流量统计
-func (web *Web) staticMulti() {
+// 多端口流量统计
+func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
 
+    type Params struct {
+        StartTimestamp string
+        EndTimestamp   string
+    }
+
+    if r.Method == "POST" {
+        Params := Params{
+            StartTimestamp: r.PostFormValue("start_timestamp"),
+            EndTimestamp: r.PostFormValue("end_timestamp"),
+        }
+
+        if len(Params.EndTimestamp) == 0 {
+            Params.EndTimestamp = time.Now().Format("2006-01-02 15:04:05")
+        }
+
+        Pipe := web.DB_Con.C("flows").Pipe([]bson.M{
+            {
+                "$match": bson.M{"created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp}},
+            },
+            {
+                "$group": bson.M{"port": "$port", "size": bson.M{"$sum": "$size"}},
+            },
+        })
+
+        Resp := []bson.M{}
+        if Pipe.All(&Resp) != nil {
+            // todo print err info
+            return
+        }
+
+        D, _ := json.Marshal(Res{
+            Code: SUCCESS,
+            Data: map[string]interface{}{
+                "list": Resp,
+                "len": len(Resp),
+            },
+            Message: "success",
+        })
+        w.Write(D)
+        return
+    } else {
+        D, _ := json.Marshal(Res{
+            Code: FAILED,
+            Data: make(map[string]interface{}),
+            Message: "required method post",
+        })
+        w.Write(D)
+        return
+    }
 }
