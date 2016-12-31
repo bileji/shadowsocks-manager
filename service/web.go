@@ -252,11 +252,20 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        UsingPort := manager.New()
+
+        for K, Item := range Resp {
+            UsingPort.Add(Item["_id"].(int32))
+            Item["port"] = Item["_id"]
+            delete(Item, "_id")
+            Resp[K] = Item
+        }
+
         D, _ := json.Marshal(Res{
             Code: SUCCESS,
             Data: map[string]interface{}{
                 "list": Resp,
-                "port_num": len(Resp),
+                "using": UsingPort.List(),
                 "listening": web.OnlinePort.List(),
             },
             Message: "success",
