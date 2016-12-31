@@ -16,7 +16,7 @@ var (
 
 type Web struct {
     Addr   string
-    DB_Con mgo.Database
+    DB_Con *mgo.Database
 }
 
 type Res struct {
