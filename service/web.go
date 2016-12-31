@@ -4,6 +4,7 @@ import (
     "net/http"
     "gopkg.in/mgo.v2"
     "strconv"
+    "encoding/json"
 )
 
 type Web struct {
@@ -32,18 +33,20 @@ func addUser(w http.ResponseWriter, r *http.Request) {
     }
 
     if r.Method == "POST" {
+        P, _ := strconv.Atoi(r.PostFormValue("port"))
         Params := &Params{
             Username: r.PostFormValue("username"),
-            Port: int32(strconv.Atoi(r.PostFormValue("port"))),
+            Port: int32(P),
             Password: r.PostFormValue("password"),
         }
 
         if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
-            w.Write([]byte(Res{
+            D, _ := json.Marshal(Res{
                 Code: 0,
                 Message: "required field username/password/port",
                 Data: make(map[string]interface{}),
-            }))
+            })
+            w.Write(D)
         } else {
 
         }
