@@ -57,6 +57,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
                 Message: "required field username/password/port",
             })
             w.Write(D)
+            return
         } else {
             // todo 判断
 
@@ -76,6 +77,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
                     Message: "save failed",
                 })
                 w.Write(D)
+                return
             }
         }
 
@@ -85,6 +87,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             Message: "add success",
         })
         w.Write(D)
+        return
     } else {
         D, _ := json.Marshal(Res{
             Code: FAILED,
@@ -92,6 +95,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             Message: "required method post",
         })
         w.Write(D)
+        return
     }
 }
 
