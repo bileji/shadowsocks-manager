@@ -14,8 +14,8 @@ type Web struct {
 
 type Res struct {
     Code    int32 `json:"code"`
-    Message string `json:"message"`
     Data    map[string]interface{} `json:"data"`
+    Message string `json:"message"`
 }
 
 func (w *Web) Run() {
@@ -43,8 +43,8 @@ func addUser(w http.ResponseWriter, r *http.Request) {
         if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
             D, _ := json.Marshal(Res{
                 Code: 0,
-                Message: "required field username/password/port",
                 Data: make(map[string]interface{}),
+                Message: "required field username/password/port",
             })
             w.Write(D)
         } else {
