@@ -45,7 +45,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
         A, _ := strconv.ParseFloat(r.PostFormValue("allowsize"), 64)
         Params := &Params{
             Username: r.PostFormValue("username"),
-            Port: P,
+            Port: int32(P),
             Password: r.PostFormValue("password"),
             AllowSize: A * 1000000,
         }
