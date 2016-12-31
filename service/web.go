@@ -151,16 +151,16 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
         P, _ := strconv.ParseInt(r.PostFormValue("port"), 10, 64)
-        L, _ := strconv.ParseInt(r.PostFormValue("limit"), 10, 64)
+        L, _ := strconv.Atoi(r.PostFormValue("limit"))
         Params := Params{
             Port: int32(P),
             StartTimestamp: r.PostFormValue("start_timestamp"),
             EndTimestamp: r.PostFormValue("end_timestamp"),
-            Limit: int(L),
+            Limit: L,
         }
 
-        if Params.Limit == int32(0) {
-            Params.Limit = int32(500)
+        if Params.Limit == 0 {
+            Params.Limit = 10000
         }
 
         if len(Params.EndTimestamp) == 0 {
