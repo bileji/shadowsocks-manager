@@ -1,11 +1,9 @@
 package service
 
 import (
-    "fmt"
     "net/http"
     "gopkg.in/mgo.v2"
-    "encoding/json"
-    //"io/ioutil"
+    "strconv"
 )
 
 type Web struct {
@@ -13,31 +11,52 @@ type Web struct {
     DB_Con mgo.Database
 }
 
+type Res struct {
+    Code    int32 `json:"code"`
+    Message string `json:"message"`
+    Data    map[string]interface{} `json:"data"`
+}
+
 func (w *Web) Run() {
     http.HandleFunc("/addUser", addUser)
     http.ListenAndServe(w.Addr, nil)
 }
 
-type AddUserParams  struct {
-    Username []string `json:"username"`
-    Port     []string `json:"port"`
-    Password []string `json:"password"`
-}
-
-// todo 添加用户
+// 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
 
-    if r.Method == "POST" && len(r.PostFormValue("port")) > 0 {
-        var Params AddUserParams
-        Args, err := json.Marshal(r.PostForm)
-        r.ParseForm()
-        if err == nil {
-            err = json.Unmarshal(Args, &Params)
-            fmt.Println(err)
-            if err == nil {
-                fmt.Println(Params)
-            }
+    type Params struct {
+        Username string
+        Port     int32
+        Password string
+    }
+
+    if r.Method == "POST" {
+        Params := &Params{
+            Username: r.PostFormValue("username"),
+            Port: int32(strconv.Atoi(r.PostFormValue("port"))),
+            Password: r.PostFormValue("password"),
         }
+
+        if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
+            w.Write([]byte(Res{
+                Code: 0,
+                Message: "required field username/password/port",
+                Data: make(map[string]interface{}),
+            }))
+        } else {
+
+        }
+
+        //Args, err := json.Marshal(r.PostForm)
+        //r.ParseForm()
+        //if err == nil {
+        //    err = json.Unmarshal(Args, &Params)
+        //    fmt.Println(err)
+        //    if err == nil {
+        //        fmt.Println(Params)
+        //    }
+        //}
     }
 
     //fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
