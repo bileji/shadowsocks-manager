@@ -28,8 +28,9 @@ type AddUserParams  struct {
 func addUser(w http.ResponseWriter, r *http.Request) {
     fmt.Printf("%T => %T", r.PostFormValue("port"), r.PostForm)
 
-    if r.Method == "POST" {
+    if r.Method == "POST" && len(r.PostFormValue("port")) > 0 {
         var Params AddUserParams
+        fmt.Println(r.PostForm.Encode())
         Args, err := json.Marshal(r.PostForm)
         r.ParseForm()
         if err == nil {
