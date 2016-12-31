@@ -30,8 +30,8 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" && len(r.PostFormValue("port")) > 0 {
         var Params AddUserParams
-        fmt.Println(r.PostForm.Encode())
         Args, err := json.Marshal(r.PostForm)
+        fmt.Println(Args)
         r.ParseForm()
         if err == nil {
             if json.Unmarshal(Args, &Params) == nil {
