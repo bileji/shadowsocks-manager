@@ -204,6 +204,7 @@ func (us *UnixSock) SaveToDB(buffer []byte) {
     if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") > 0 {
 
     } else {
+        fmt.Println(Message)
         if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
             for k, v := range M {
                 switch Size := v.(type) {
