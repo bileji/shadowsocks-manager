@@ -31,7 +31,7 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
         var Params AddUserParams
-        fmt.Println(r.PostForm)
+        fmt.Println(r.PostForm.Encode())
         Args, err := json.Marshal(r.PostForm)
         r.ParseForm()
         if err == nil {
