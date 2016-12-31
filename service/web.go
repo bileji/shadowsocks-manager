@@ -241,8 +241,13 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
         })
 
         Resp := []bson.M{}
-        if Pipe.All(&Resp) != nil {
-            // todo print err info
+        if err := Pipe.All(&Resp); err != nil {
+            D, _ := json.Marshal(Res{
+                Code: FAILED,
+                Data: make(map[string]interface{}),
+                Message: "pipe error",
+            })
+            w.Write(D)
             return
         }
 
