@@ -255,7 +255,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             Code: SUCCESS,
             Data: map[string]interface{}{
                 "list": Resp,
-                "len": len(Resp),
+                "port_num": len(Resp),
             },
             Message: "success",
         })
