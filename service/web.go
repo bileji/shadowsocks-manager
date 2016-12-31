@@ -10,8 +10,8 @@ import (
 )
 
 var (
-    FAILED = 0
-    SUCCESS = 200
+    FAILED int32 = 0
+    SUCCESS int32 = 200
 )
 
 type Web struct {
