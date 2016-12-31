@@ -146,25 +146,33 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
         Port           int32
         StartTimestamp string
         EndTimestamp   string
+        Limit          int32
     }
 
     if r.Method == "POST" {
         P, _ := strconv.ParseInt(r.PostFormValue("port"), 10, 64)
+        L, _ := strconv.ParseInt(r.PostFormValue("limit"), 10, 64)
         Params := Params{
             Port: int32(P),
             StartTimestamp: r.PostFormValue("start_timestamp"),
             EndTimestamp: r.PostFormValue("end_timestamp"),
+            Limit: int32(L),
+        }
+
+        if Params.Limit == int32(0) {
+            Params.Limit = int32(500)
+        }
+
+        if len(Params.EndTimestamp) == 0 {
+            Params.EndTimestamp = time.Now().Format("2006-01-02 15:04:05")
         }
 
         Resp := []bson.M{}
         if web.DB_Con.C("flows").Find(bson.M{
             "port": Params.Port,
             "created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp},
-        }).Select(bson.M{"size": true, "created": true}).All(&Resp) == nil {
-
+        }).Select(bson.M{"size": true, "created": true}).Sort("-created").Limit(Params.Limit).All(&Resp) == nil {
             SumSize := float64(0)
-            //Static := make(map[string]interface{})
-
             for K, Item := range Resp {
                 Item["timestamp"] = Item["created"]
                 delete(Item, "_id")
@@ -173,16 +181,13 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 Resp[K] = Item
             }
 
-            //Static["sum"] = SumSize
-            //Static["list"] = Resp
-
             D, _ := json.Marshal(Res{
                 Code: SUCCESS,
                 Data: map[string]interface{}{
                     "list": Resp,
                     "sum_size": SumSize,
                 },
-                Message: "flow static of port(" + strconv.Itoa(int(Params.Port)) + ")",
+                Message: "flow static of port: " + strconv.Itoa(int(Params.Port)),
             })
             w.Write(D)
             return
