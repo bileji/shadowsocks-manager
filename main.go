@@ -190,10 +190,11 @@ func main() {
     })
 
     // web服务
-    go func() {
-        Web := service.Web{}
-        Web.Run()
-    }()
+    Web := service.Web{
+        Addr: ":80",
+        DB_Con: Con,
+    }
+    go Web.Run()
 
     select {}
 }

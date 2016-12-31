@@ -5,6 +5,13 @@ import (
     "gopkg.in/mgo.v2"
     "strconv"
     "encoding/json"
+    "shadowsocks-manager/manager"
+    "time"
+)
+
+var (
+    FAILED = 0
+    SUCCESS = 200
 )
 
 type Web struct {
@@ -19,17 +26,18 @@ type Res struct {
 }
 
 func (w *Web) Run() {
-    http.HandleFunc("/addUser", addUser)
+    http.HandleFunc("/addUser", w.addUser)
     http.ListenAndServe(w.Addr, nil)
 }
 
 // 添加用户
-func addUser(w http.ResponseWriter, r *http.Request) {
+func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
 
     type Params struct {
-        Username string
-        Port     int32
-        Password string
+        Username  string
+        Port      int32
+        Password  string
+        AllowSize float64
     }
 
     if r.Method == "POST" {
@@ -38,44 +46,50 @@ func addUser(w http.ResponseWriter, r *http.Request) {
             Username: r.PostFormValue("username"),
             Port: int32(P),
             Password: r.PostFormValue("password"),
+            AllowSize: r.PostFormValue("allowsize") * 1000000,
         }
 
         if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
             D, _ := json.Marshal(Res{
-                Code: 0,
+                Code: FAILED,
                 Data: make(map[string]interface{}),
                 Message: "required field username/password/port",
             })
             w.Write(D)
         } else {
-
+            err := web.DB_Con.C("users").Insert(manager.User{
+                Username: Params.Username,
+                Port: Params.Port,
+                Status: true,
+                Password: Params.Password,
+                AllowSize: Params.AllowSize,
+                Created: time.Now().Format("2006-01-02 15:04:05"),
+                Modified: time.Now().Format("2006-01-02 15:04:05"),
+            })
+            if err != nil {
+                D, _ := json.Marshal(Res{
+                    Code: FAILED,
+                    Data: make(map[string]interface{}),
+                    Message: "save failed",
+                })
+                w.Write(D)
+            }
         }
 
-        //Args, err := json.Marshal(r.PostForm)
-        //r.ParseForm()
-        //if err == nil {
-        //    err = json.Unmarshal(Args, &Params)
-        //    fmt.Println(err)
-        //    if err == nil {
-        //        fmt.Println(Params)
-        //    }
-        //}
+        D, _ := json.Marshal(Res{
+            Code: SUCCESS,
+            Data: make(map[string]interface{}),
+            Message: "add success",
+        })
+        w.Write(D)
+    } else {
+        D, _ := json.Marshal(Res{
+            Code: FAILED,
+            Data: make(map[string]interface{}),
+            Message: "required method post",
+        })
+        w.Write(D)
     }
-
-    //fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
-    //fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
-    //r.ParseForm()
-    //if r.Method == "POST" {
-    //    result, _ := ioutil.ReadAll(r.Body)
-    //    r.Body.Close()
-    //
-    //    var Params AddUserParams
-    //    json.Unmarshal([]byte(result), &Params)
-    //
-    //    fmt.Println(Params)
-    //} else {
-    //
-    //}
 }
 
 // todo 移除用户
