@@ -201,7 +201,7 @@ func (us *UnixSock) Monitor() error {
 
 func (us *UnixSock) SaveToDB(buffer []byte) {
     M := make(map[string]interface{})
-    if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") > 0 {
+    if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "ok") > 0 {
         fmt.Println(Message, "1")
     } else {
         fmt.Println(Message, "2")
