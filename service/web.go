@@ -255,7 +255,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
         UsingPort := manager.New()
 
         for K, Item := range Resp {
-            UsingPort.Add(Item["_id"].(int32))
+            UsingPort.Add(int32(strconv.Atoi(Item["_id"].(string))))
             Item["port"] = Item["_id"]
             delete(Item, "_id")
             Resp[K] = Item
