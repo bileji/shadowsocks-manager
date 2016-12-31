@@ -26,7 +26,7 @@ type AddU struct {
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
 
-    fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
+    fmt.Println(r.PostFormValue("port"), r.Method, r.Body)
     fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
     r.ParseForm()
     if r.Method == "POST" {
