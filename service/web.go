@@ -41,12 +41,13 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
     }
 
     if r.Method == "POST" {
-        P, _ := strconv.Atoi(r.PostFormValue("port"))
+        P, _ := strconv.ParseInt(r.PostFormValue("port"), 10, 64)
+        A, _ := strconv.ParseFloat(r.PostFormValue("allowsize"), 64)
         Params := &Params{
             Username: r.PostFormValue("username"),
-            Port: int32(P),
+            Port: P,
             Password: r.PostFormValue("password"),
-            AllowSize: r.PostFormValue("allowsize") * 1000000,
+            AllowSize: A * 1000000,
         }
 
         if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
@@ -57,6 +58,8 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             })
             w.Write(D)
         } else {
+            // todo 判断
+
             err := web.DB_Con.C("users").Insert(manager.User{
                 Username: Params.Username,
                 Port: Params.Port,
