@@ -26,8 +26,9 @@ type AddUserParams  struct {
 
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
-    //r.ParseForm()
-    //fmt.Println(r.PostFormValue("port"), r.Method, r.PostForm, r.Body)
+    fmt.Println(r.PostFormValue("port"), r.Method, r.PostForm, r.Body)
+    r.ParseForm()
+
     //if r.Method == "POST" {
     //    var Params AddUserParams
     //    fmt.Println(r.Form)
@@ -39,9 +40,9 @@ func addUser(w http.ResponseWriter, r *http.Request) {
     //    }
     //}
 
-    fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
-    fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
-    r.ParseForm()
+    //fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
+    //fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
+    //r.ParseForm()
     //if r.Method == "POST" {
     //    result, _ := ioutil.ReadAll(r.Body)
     //    r.Body.Close()
