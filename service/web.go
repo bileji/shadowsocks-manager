@@ -178,7 +178,10 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
 
             D, _ := json.Marshal(Res{
                 Code: SUCCESS,
-                Data: Static,
+                Data: {
+                    "list": Resp,
+                    "sum_size": SumSize,
+                },
                 Message: "flow static of port(" + strconv.Itoa(int(Params.Port)) + ")",
             })
             w.Write(D)
