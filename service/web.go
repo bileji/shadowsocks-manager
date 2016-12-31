@@ -179,7 +179,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 if _, ok := Item["created"]; ok {
                     Rec.TimeStamp = Item["created"].(string)
                 }
-                Static["total"] += Rec.Size
+                Static["total"].(float64) += Rec.Size
                 Static["list"] = append(Static["list"], Rec)
             }
 
