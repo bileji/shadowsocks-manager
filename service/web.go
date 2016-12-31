@@ -236,7 +236,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
                 "$match": bson.M{"created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp}},
             },
             {
-                "$group": bson.M{"port": "$port", "size": bson.M{"$sum": "$size"}},
+                "$group": bson.M{"_id": "$port", "size": bson.M{"$sum": "$size"}},
             },
         })
 
