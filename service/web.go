@@ -163,7 +163,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
         }).Select(bson.M{"size": true, "created": true}).All(&Resp) == nil {
 
             SumSize := float64(0)
-            Static := make(map[string]interface{})
+            //Static := make(map[string]interface{})
 
             for K, Item := range Resp {
                 Item["timestamp"] = Item["created"]
@@ -173,12 +173,12 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 Resp[K] = Item
             }
 
-            Static["sum"] = SumSize
-            Static["list"] = Resp
+            //Static["sum"] = SumSize
+            //Static["list"] = Resp
 
             D, _ := json.Marshal(Res{
                 Code: SUCCESS,
-                Data: {
+                Data: map[string]interface{}{
                     "list": Resp,
                     "sum_size": SumSize,
                 },
