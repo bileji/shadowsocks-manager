@@ -205,7 +205,6 @@ func (us *UnixSock) SaveToDB(buffer []byte) {
 
     } else {
         if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
-            fmt.Println(M)
             for k, v := range M {
                 switch Size := v.(type) {
                 case float64:
