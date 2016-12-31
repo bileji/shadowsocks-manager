@@ -16,8 +16,9 @@ var (
 )
 
 type Web struct {
-    Addr   string
-    DB_Con *mgo.Database
+    Addr       string
+    DBCon      *mgo.Database
+    OnlinePort *manager.Ports
 }
 
 type Res struct {
@@ -64,7 +65,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
         } else {
             // todo 判断
 
-            Count, _ := web.DB_Con.C("users").Find(bson.M{
+            Count, _ := web.DBCon.C("users").Find(bson.M{
                 "$or": []bson.M{
                     {
                         "port": Params.Port,
@@ -84,7 +85,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
                 return
             }
 
-            err := web.DB_Con.C("users").Insert(manager.User{
+            err := web.DBCon.C("users").Insert(manager.User{
                 Username: Params.Username,
                 Port: Params.Port,
                 Status: true,
@@ -169,7 +170,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
         }
 
         Resp := []bson.M{}
-        if web.DB_Con.C("flows").Find(bson.M{
+        if web.DBCon.C("flows").Find(bson.M{
             "port": Params.Port,
             "created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp},
         }).Select(bson.M{"size": true, "created": true}).Sort("-created").Limit(Params.Limit).All(&Resp) == nil {
@@ -231,7 +232,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             Params.EndTimestamp = time.Now().Format("2006-01-02 15:04:05")
         }
 
-        Pipe := web.DB_Con.C("flows").Pipe([]bson.M{
+        Pipe := web.DBCon.C("flows").Pipe([]bson.M{
             {
                 "$match": bson.M{"created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp}},
             },
@@ -256,6 +257,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             Data: map[string]interface{}{
                 "list": Resp,
                 "port_num": len(Resp),
+                "listening": web.OnlinePort.List(),
             },
             Message: "success",
         })

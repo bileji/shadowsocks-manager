@@ -192,7 +192,8 @@ func main() {
     // web服务
     Web := service.Web{
         Addr: ":80",
-        DB_Con: Con,
+        DBCon: Con,
+        OnlinePort: ListenPorts,
     }
     go Web.Run()
 
