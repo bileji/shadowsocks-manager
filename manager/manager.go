@@ -202,9 +202,9 @@ func (us *UnixSock) Monitor() error {
 func (us *UnixSock) SaveToDB(buffer []byte) {
     M := make(map[string]interface{})
     if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") > 0 {
-
+        fmt.Println(Message, "1")
     } else {
-        fmt.Println(Message)
+        fmt.Println(Message, "2")
         if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
             for k, v := range M {
                 switch Size := v.(type) {
