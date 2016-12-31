@@ -64,8 +64,12 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
 
             Count, _ := web.DB_Con.C("users").Find(bson.M{
                 "$or": []bson.M{
-                    "username": Params.Username,
-                    "port": Params.Port,
+                    {
+                        "port": Params.Port,
+                    },
+                    {
+                        "username": Params.Username,
+                    },
                 },
             }).Count()
             if Count > 0 {
