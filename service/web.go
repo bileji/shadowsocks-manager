@@ -72,7 +72,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
                 D, _ := json.Marshal(Res{
                     Code: FAILED,
                     Data: make(map[string]interface{}),
-                    Message: "the port is occupied",
+                    Message: "the username/port is occupied",
                 })
                 w.Write(D)
                 return
