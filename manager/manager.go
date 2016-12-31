@@ -177,9 +177,9 @@ func (us *UnixSock) Monitor() error {
                         if err == nil {
                             us.ListenPorts.Remove(Port)
                             fmt.Printf("    -del: %d\r\n", Port)
-                            delete(Limits, Port)
                         }
                     }
+                    delete(Limits, Port)
                 }
             }
         }
