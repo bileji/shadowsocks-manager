@@ -19,7 +19,7 @@ var (
     MONGODB_PASSWORD = "mlgR4evB"
 
     FLOW_COLLECTION = "flows"
-    USER_COLLECTION = "user"
+    USER_COLLECTION = "users"
 
     HEARTBEAT_FREQUENCY = 30
 )
@@ -71,6 +71,7 @@ func main() {
     go USock.Ping()
 
     // 每30sec检查流量是否超标
+    USock.Monitor()
     go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
 
     // 监听各端口流量情况
