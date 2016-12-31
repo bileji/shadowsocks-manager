@@ -252,10 +252,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        UsingPort := manager.New()
-
         for K, Item := range Resp {
-            UsingPort.Add(int32(Item["_id"].(int)))
             Item["port"] = Item["_id"]
             delete(Item, "_id")
             Resp[K] = Item
@@ -265,7 +262,6 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             Code: SUCCESS,
             Data: map[string]interface{}{
                 "list": Resp,
-                "using": UsingPort.List(),
                 "listening": web.OnlinePort.List(),
             },
             Message: "success",
