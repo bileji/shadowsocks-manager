@@ -6,7 +6,23 @@ import (
     "strconv"
     "gopkg.in/mgo.v2"
     "github.com/noaway/heartbeat"
+    "gopkg.in/mgo.v2/bson"
+    "fmt"
+    "time"
 )
+
+var (
+    USER_COLLECTION = "users"
+    FLOW_COLLECTION = "flows"
+)
+
+type Options struct {
+    DBHost             string
+    DBName             string
+    DBUsername         string
+    DBPassword         string
+    HeartbeatFrequency int
+}
 
 type User struct {
     Username  string
@@ -18,6 +34,11 @@ type User struct {
     Modified  string
 }
 
+type Limit struct {
+    AllowSize float64
+    Password  string
+}
+
 type Flow struct {
     Port     int32
     Size     float64
@@ -26,12 +47,14 @@ type Flow struct {
 }
 
 type UnixSock struct {
-    Net        string
-    LSock      string
-    RSock      string
-    UConn      *net.UnixConn
-    Con        *mgo.Database
-    Collection string
+    Net         string
+    LSock       string
+    RSock       string
+    UConn       *net.UnixConn
+    Con         *mgo.Database
+    Collection  string
+    Args        *Options
+    ListenPorts *Ports
 }
 
 func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
@@ -97,6 +120,86 @@ func (us *UnixSock) HeartBeat(spec int, fn func() error) error {
     }
     ht.Start(fn)
 
+    return nil
+}
+
+func (us *UnixSock) Monitor() error {
+    Ports := New()
+    Users := []User{}
+    Limits := make(map[int32]Limit)
+
+    fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), us.Args.HeartbeatFrequency)
+
+    if us.Con.C(USER_COLLECTION).Find(bson.M{"status": true}).All(&Users) == nil {
+        for _, User := range Users {
+            if User.Port != 0 {
+                Ports.Add(User.Port)
+                Limits[User.Port] = Limit{
+                    Password: User.Password,
+                    AllowSize: User.AllowSize,
+                }
+            }
+        }
+    }
+
+    for _, Port := range Minus(us.ListenPorts, Ports).List() {
+        us.Del(Port)
+    }
+
+    if !Ports.Empty() {
+        StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+        Pipe := us.Con.C(FLOW_COLLECTION).Pipe([]bson.M{
+            {
+                "$match": bson.M{
+                    "port": bson.M{"$in": Ports.List()},
+                    "created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")},
+                },
+            },
+            {
+                "$group": bson.M{"_id": "$port", "total": bson.M{"$sum": "$size"}},
+            },
+        })
+
+        Resp := []bson.M{}
+        if Pipe.All(&Resp) != nil {
+            // todo print err info
+        }
+
+        for _, Item := range Resp {
+            Port := int32(Item["_id"].(int))
+            AllowSize := Item["total"].(float64)
+            if _, ok := Limits[Port]; !ok {
+                _, err := us.Del(Port)
+                if err == nil {
+                    us.ListenPorts.Remove(Port)
+                    fmt.Printf("    -del: %d\r\n", Port)
+                }
+            } else {
+                if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
+                    _, err := us.Del(Port)
+                    if err == nil {
+                        us.ListenPorts.Remove(Port)
+                        fmt.Printf("    -del: %d\r\n", Port)
+                        delete(Limits, Port)
+                    }
+                }
+            }
+        }
+
+        for Port, item := range Limits {
+            if !us.ListenPorts.Has(Port) {
+                _, err := us.Add(Port, string(item.Password))
+                if err == nil {
+                    us.ListenPorts.Add(Port)
+                    fmt.Printf("    +add: %d\r\n", Port)
+                }
+            } else {
+                fmt.Printf("    *lis: %d\r\n", Port)
+            }
+        }
+    } else {
+        fmt.Println("collection users is null")
+    }
     return nil
 }
 

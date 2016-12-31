@@ -7,24 +7,15 @@ import (
     "strings"
     "encoding/json"
     "shadowsocks-manager/manager"
-    "gopkg.in/mgo.v2/bson"
     "flag"
     "os"
     "shadowsocks-manager/service"
 )
 
-type Limit struct {
-    AllowSize float64
-    Password  string
-}
-
-type Options struct {
-    DBHost             string
-    DBName             string
-    DBUsername         string
-    DBPassword         string
-    HeartbeatFrequency int
-}
+//type Limit struct {
+//    AllowSize float64
+//    Password  string
+//}
 
 var (
     MONGODB_HOST = "127.0.0.1:27017"
@@ -38,7 +29,7 @@ var (
     HEARTBEAT_FREQUENCY = 30
 )
 
-func GetArgs() *Options {
+func GetArgs() *manager.Options {
     flag.Usage = func() {
         fmt.Fprintf(os.Stderr, "Welcome to use %s ^_^____\r\nOptions:\n", os.Args[0])
         flag.PrintDefaults()
@@ -51,7 +42,7 @@ func GetArgs() *Options {
     Heartbeat := flag.Int("heartbeat", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
 
     flag.Parse()
-    return &Options{
+    return &manager.Options{
         DBHost: *DBHost,
         DBName: *DBName,
         DBUsername: *Username,
@@ -75,94 +66,16 @@ func main() {
         RSock: "/var/run/shadowsocks-manager.sock",
         Con: Con,
         Collection: FLOW_COLLECTION,
+        Args: Args,
+        ListenPorts: manager.New(),
     }
 
     // 正在监听的端口
-    ListenPorts := manager.New()
-
     USock.Listen()
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    go USock.HeartBeat(Args.HeartbeatFrequency, func() error {
-        Ports := manager.New()
-        Users := []manager.User{}
-        Limits := make(map[int32]Limit)
-
-        fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), Args.HeartbeatFrequency)
-
-        if USock.Con.C(USER_COLLECTION).Find(bson.M{"status": true}).All(&Users) == nil {
-            for _, User := range Users {
-                if User.Port != 0 {
-                    Ports.Add(User.Port)
-                    Limits[User.Port] = Limit{
-                        Password: User.Password,
-                        AllowSize: User.AllowSize,
-                    }
-                }
-            }
-        }
-
-        for _, Port := range manager.Minus(ListenPorts, Ports).List() {
-            USock.Del(Port)
-        }
-
-        if !Ports.Empty() {
-            StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-            Pipe := USock.Con.C(FLOW_COLLECTION).Pipe([]bson.M{
-                {
-                    "$match": bson.M{
-                        "port": bson.M{"$in": Ports.List()},
-                        "created": bson.M{"$gt": StartTime.Format("2006-01-02 15:04:05")},
-                    },
-                },
-                {
-                    "$group": bson.M{"_id": "$port", "total": bson.M{"$sum": "$size"}},
-                },
-            })
-
-            Resp := []bson.M{}
-            if Pipe.All(&Resp) != nil {
-                // todo print err info
-            }
-
-            for _, Item := range Resp {
-                Port := int32(Item["_id"].(int))
-                AllowSize := Item["total"].(float64)
-                if _, ok := Limits[Port]; !ok {
-                    _, err := USock.Del(Port)
-                    if err == nil {
-                        ListenPorts.Remove(Port)
-                        fmt.Printf("    -del: %d\r\n", Port)
-                    }
-                } else {
-                    if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
-                        _, err := USock.Del(Port)
-                        if err == nil {
-                            ListenPorts.Remove(Port)
-                            fmt.Printf("    -del: %d\r\n", Port)
-                            delete(Limits, Port)
-                        }
-                    }
-                }
-            }
-
-            for Port, item := range Limits {
-                if !ListenPorts.Has(Port) {
-                    _, err := USock.Add(Port, string(item.Password))
-                    if err == nil {
-                        ListenPorts.Add(Port)
-                        fmt.Printf("    +add: %d\r\n", Port)
-                    }
-                } else {
-                    fmt.Printf("    *lis: %d\r\n", Port)
-                }
-            }
-        } else {
-            fmt.Println("collection users is null")
-        }
-        return nil
-    })
+    go USock.HeartBeat(Args.HeartbeatFrequency, USock.Monitor())
 
     // 监听各端口流量情况
     go USock.Rec(func(buffer []byte) {
@@ -193,7 +106,7 @@ func main() {
     Web := service.Web{
         Addr: ":80",
         DBCon: Con,
-        OnlinePort: ListenPorts,
+        OnlinePort: USock.ListenPorts,
     }
     go Web.Run()
 
