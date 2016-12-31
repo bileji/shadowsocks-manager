@@ -167,13 +167,10 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 TimeStamp string
             }
 
-            type Static struct {
-                Total float64
-                List  []Item
-            }
+            Static := make(map[string]interface{})
 
-            Data := Static{}
-
+            Static["list"] = []Item{}
+            Static["total"] = float64(0)
             for _, Item := range Resp {
                 Rec := Item{}
                 if _, ok := Item["size"]; ok {
@@ -182,13 +179,13 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 if _, ok := Item["created"]; ok {
                     Rec.TimeStamp = Item["created"]
                 }
-                Data.Total += Rec.Size
-                Data.List = append(Data.List, Rec)
+                Static["total"] += Rec.Size
+                Static["list"] = append(Static["list"], Rec)
             }
 
             D, _ := json.Marshal(Res{
                 Code: SUCCESS,
-                Data: Data,
+                Data: Static,
                 Message: "flow static of port(" + strconv.Itoa(int(Params.Port)) + ")",
             })
             w.Write(D)
