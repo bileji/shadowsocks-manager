@@ -4,8 +4,8 @@ import (
     "fmt"
     "net/http"
     "gopkg.in/mgo.v2"
-    "encoding/json"
-    "io/ioutil"
+    //"encoding/json"
+    //"io/ioutil"
 )
 
 type Web struct {
@@ -42,17 +42,17 @@ func addUser(w http.ResponseWriter, r *http.Request) {
     fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
     fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
     r.ParseForm()
-    if r.Method == "POST" {
-        result, _ := ioutil.ReadAll(r.Body)
-        r.Body.Close()
-
-        var Params AddUserParams
-        json.Unmarshal([]byte(result), &Params)
-
-        fmt.Println(Params)
-    } else {
-
-    }
+    //if r.Method == "POST" {
+    //    result, _ := ioutil.ReadAll(r.Body)
+    //    r.Body.Close()
+    //
+    //    var Params AddUserParams
+    //    json.Unmarshal([]byte(result), &Params)
+    //
+    //    fmt.Println(Params)
+    //} else {
+    //
+    //}
 }
 
 // todo 移除用户
