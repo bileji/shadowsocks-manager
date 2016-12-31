@@ -49,22 +49,18 @@ func GetArgs() *manager.Options {
 func main() {
     Args := GetArgs()
 
-    err, Con := manager.ConnectToMgo(Args.DBHost, Args.DBName, Args.DBUsername, Args.DBPassword)
-    if err != nil {
-        panic(err)
-    }
-    defer Con.Session.Close()
-
     USock := manager.UnixSock{
         Net: "unixgram",
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
-        Con: Con,
+        Con: manager.ConnectToMgo(Args.DBHost, Args.DBName, Args.DBUsername, Args.DBPassword),
         Args: Args,
         FlowC: FLOW_COLLECTION,
         UserC: USER_COLLECTION,
         ListenPorts: manager.New(),
     }
+
+    defer USock.Con.Session.Close()
 
     // 正在监听的端口
     USock.Listen()
@@ -102,7 +98,7 @@ func main() {
     // web服务
     Web := service.Web{
         Addr: ":80",
-        DBCon: Con,
+        DBCon: USock.Con,
         OnlinePort: USock.ListenPorts,
     }
     go Web.Run()

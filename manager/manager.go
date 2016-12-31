@@ -53,18 +53,15 @@ type UnixSock struct {
     ListenPorts *Ports
 }
 
-func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
-
+func ConnectToMgo(host string, db string, username string, password string) *mgo.Database {
     session, err := mgo.Dial(host)
     if err != nil {
-        return err, nil
+        panic(err)
     }
-
-    err = session.DB(db).Login(username, password)
-    if err != nil {
-        return err, nil
+    if session.DB(db).Login(username, password) != nil {
+        panic(err)
     }
-    return nil, session.DB(db)
+    return session.DB(db)
 }
 
 func (us *UnixSock) Listen() {
