@@ -147,6 +147,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
         StartTimestamp string
         EndTimestamp   string
     }
+
     if r.Method == "POST" {
         P, _ := strconv.ParseInt(r.PostFormValue("port"), 10, 64)
         Params := Params{
@@ -160,12 +161,35 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
             "port": Params.Port,
             "created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp},
         }).Select(bson.M{"size": true, "created": true}).All(&Resp) == nil {
-            Data := make(map[string]interface{})
-            Data["list"] = Resp
+
+            type Item struct {
+                Size      float64
+                TimeStamp string
+            }
+
+            type Static struct {
+                Total float64
+                List  []Item
+            }
+
+            Data := Static{}
+
+            for _, Item := range Resp {
+                Rec := Item{}
+                if _, ok := Item["size"]; ok {
+                    Rec.Size = Item["size"]
+                }
+                if _, ok := Item["created"]; ok {
+                    Rec.TimeStamp = Item["created"]
+                }
+                Data.Total += Rec.Size
+                Data.List = append(Data.List, Rec)
+            }
+
             D, _ := json.Marshal(Res{
                 Code: SUCCESS,
                 Data: Data,
-                Message: "static of " + strconv.Itoa(int(Params.Port)),
+                Message: "flow static of port(" + strconv.Itoa(int(Params.Port)) + ")",
             })
             w.Write(D)
             return
