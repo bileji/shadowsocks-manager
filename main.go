@@ -63,7 +63,7 @@ func main() {
         panic(err)
     }
     USock.Con = Con
-    defer Con.Session.Close()
+    //defer Con.Session.Close()
 
     // 正在监听的端口
     USock.Listen()
