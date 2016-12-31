@@ -171,12 +171,14 @@ func (us *UnixSock) Monitor() error {
                     fmt.Printf("    -del: %d\r\n", Port)
                 }
             } else {
-                if us.ListenPorts.Has(Port) && Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
-                    _, err := us.Del(Port)
-                    if err == nil {
-                        us.ListenPorts.Remove(Port)
-                        fmt.Printf("    -del: %d\r\n", Port)
-                        delete(Limits, Port)
+                if Limits[Port].AllowSize != float64(0) && Limits[Port].AllowSize < AllowSize {
+                    if !us.ListenPorts.Empty() && us.ListenPorts.Has(Port) {
+                        _, err := us.Del(Port)
+                        if err == nil {
+                            us.ListenPorts.Remove(Port)
+                            fmt.Printf("    -del: %d\r\n", Port)
+                            delete(Limits, Port)
+                        }
                     }
                 }
             }
