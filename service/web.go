@@ -166,9 +166,11 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
             Static := make(map[string]interface{})
 
             for K, Item := range Resp {
+                Item["timestamp"] = Item["created"]
                 delete(Item, "_id")
-                Resp[K] = Item
+                delete(Item, "created")
                 SumSize += Item["size"].(float64)
+                Resp[K] = Item
             }
 
             Static["sum"] = SumSize
