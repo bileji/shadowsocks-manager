@@ -10,6 +10,7 @@ import (
     "gopkg.in/mgo.v2/bson"
     "flag"
     "os"
+    "shadowsocks-manager/service"
 )
 
 type Limit struct {
@@ -187,6 +188,12 @@ func main() {
             }
         }
     })
+
+    // web服务
+    go func() {
+        Web := service.Web{}
+        Web.Run()
+    }()
 
     select {}
 }
