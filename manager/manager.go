@@ -201,10 +201,8 @@ func (us *UnixSock) Monitor() error {
 
 func (us *UnixSock) SaveToDB(buffer []byte) {
     M := make(map[string]interface{})
-    if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Contains(Message, "pong") {
-        if strings.Contains(Message, "pong") {
-            //fmt.Printf("[%s] +start to listen ^_^____\r\n", time.Now().Format("2006-01-02 15:04:05"))
-        }
+    if Message := strings.TrimLeft(string(buffer), "stat: "); strings.EqualFold(Message, "pong") {
+
     } else {
         if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
             fmt.Println(M)
