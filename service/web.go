@@ -19,9 +19,9 @@ func (w *Web) Run() {
 }
 
 type AddUserParams  struct {
-    Username string `json:"username"`
-    Port     string `json:"port"`
-    Password string `json:"password"`
+    Username []string `json:"username"`
+    Port     []string `json:"port"`
+    Password []string `json:"password"`
 }
 
 // todo 添加用户
