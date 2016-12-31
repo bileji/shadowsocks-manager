@@ -186,6 +186,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 Data: map[string]interface{}{
                     "list": Resp,
                     "sum_size": SumSize,
+                    "len": len(Resp),
                 },
                 Message: "flow static of port: " + strconv.Itoa(int(Params.Port)),
             })
