@@ -121,9 +121,74 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // todo 移除用户
+func (web *Web) stopUser() {
+
+}
 
 // todo 用户列表
+func (web *Web) editUser() {
+
+    type Params struct {
+        Username  string
+        Port      int32
+        Password  string
+        AllowSize float64
+        Status    bool
+    }
+
+}
 
 // todo 查看某一端口流量情况
+func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
+
+    type Params struct {
+        Port           int32
+        StartTimestamp string
+        EndTimestamp   string
+    }
+    if r.Method == "POST" {
+        P, _ := strconv.ParseInt(r.PostFormValue("port"), 10, 64)
+        Params := Params{
+            Port: int32(P),
+            StartTimestamp: r.PostFormValue("start_timestamp"),
+            EndTimestamp: r.PostFormValue("end_timestamp"),
+        }
+
+        Resp := []bson.M{}
+        if web.DB_Con.C("flows").Find(bson.M{
+            "port": Params.Port,
+            "created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp},
+        }).All(&Resp) {
+            Data := make(map[string]interface{})
+            Data["list"] = Resp
+            D, _ := json.Marshal(Res{
+                Code: SUCCESS,
+                Data: Data,
+                Message: "static of " + strconv.Itoa(int(Params.Port)),
+            })
+            w.Write(D)
+            return
+        } else {
+            D, _ := json.Marshal(Res{
+                Code: FAILED,
+                Data: make(map[string]interface{}),
+                Message: "query failed",
+            })
+            w.Write(D)
+            return
+        }
+    } else {
+        D, _ := json.Marshal(Res{
+            Code: FAILED,
+            Data: make(map[string]interface{}),
+            Message: "required method post",
+        })
+        w.Write(D)
+        return
+    }
+}
 
 // todo 流量统计
+func (web *Web) staticMulti() {
+
+}
