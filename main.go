@@ -47,30 +47,30 @@ func GetArgs() *manager.Options {
 }
 
 func main() {
+    Args := GetArgs()
+
+    err, Con := manager.ConnectToMgo(Args.DBHost, Args.DBName, Args.DBUsername, Args.DBPassword)
+    if err != nil {
+        panic(err)
+    }
+    defer Con.Session.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
-        Args: GetArgs(),
+        Con: Con,
+        Args: Args,
         FlowC: FLOW_COLLECTION,
         UserC: USER_COLLECTION,
         ListenPorts: manager.New(),
     }
-
-    err, Con := manager.ConnectToMgo(USock.Args)
-    if err != nil {
-        panic(err)
-    }
-    USock.Con = Con
-    //defer Con.Session.Close()
 
     // 正在监听的端口
     USock.Listen()
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    USock.Monitor()
     go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
 
     // 监听各端口流量情况
