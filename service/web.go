@@ -28,6 +28,7 @@ type Res struct {
 
 func (w *Web) Run() {
     http.HandleFunc("/user/add", w.addUser)
+    http.HandleFunc("/static/single", w.staticSingle)
     http.ListenAndServe(w.Addr, nil)
 }
 
