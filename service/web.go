@@ -19,7 +19,7 @@ func (w *Web) Run() {
 
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
-    r.PostForm()
+    r.ParseForm()
     if r.Method == "POST" {
         result, _ := ioutil.ReadAll(r.Body)
         r.Body.Close()
