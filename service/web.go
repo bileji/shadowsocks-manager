@@ -162,17 +162,17 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
             "created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp},
         }).Select(bson.M{"size": true, "created": true}).All(&Resp) == nil {
 
-            type Item struct {
+            type One struct {
                 Size      float64
                 TimeStamp string
             }
 
             Static := make(map[string]interface{})
 
-            Static["list"] = []Item{}
+            Static["list"] = []One{}
             Static["total"] = float64(0)
             for _, Item := range Resp {
-                Rec := Item{}
+                Rec := One{}
                 if _, ok := Item["size"]; ok {
                     Rec.Size = Item["size"]
                 }
