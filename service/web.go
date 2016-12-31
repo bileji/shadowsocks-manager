@@ -28,6 +28,7 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
         var Params AddUserParams
+        fmt.Println(r.Form)
         Args, err := json.Marshal(r.Form)
         if err == nil {
             if json.Unmarshal(Args, &Params) == nil {
