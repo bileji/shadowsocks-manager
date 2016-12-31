@@ -75,7 +75,7 @@ func main() {
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    go USock.HeartBeat(Args.HeartbeatFrequency, USock.Monitor())
+    go USock.HeartBeat(Args.HeartbeatFrequency, USock.Monitor)
 
     // 监听各端口流量情况
     go USock.Rec(func(buffer []byte) {
