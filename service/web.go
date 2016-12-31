@@ -4,7 +4,7 @@ import (
     "fmt"
     "net/http"
     "gopkg.in/mgo.v2"
-    //"encoding/json"
+    "encoding/json"
     //"io/ioutil"
 )
 
@@ -26,19 +26,19 @@ type AddUserParams  struct {
 
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
-    fmt.Println(r.PostFormValue("port"), r.Method, r.PostForm, r.Body)
-    r.ParseForm()
+    //fmt.Println(r.PostFormValue("port"), r.Method, r.PostForm, r.Body)
 
-    //if r.Method == "POST" {
-    //    var Params AddUserParams
-    //    fmt.Println(r.Form)
-    //    Args, err := json.Marshal(r.Form)
-    //    if err == nil {
-    //        if json.Unmarshal(Args, &Params) == nil {
-    //            fmt.Println(Params)
-    //        }
-    //    }
-    //}
+    if r.Method == "POST" {
+        var Params AddUserParams
+        fmt.Println(r.PostForm)
+        Args, err := json.Marshal(r.PostForm)
+        r.ParseForm()
+        if err == nil {
+            if json.Unmarshal(Args, &Params) == nil {
+                fmt.Println(Params)
+            }
+        }
+    }
 
     //fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
     //fmt.Printf("type: %T, value: %s", r.PostFormValue("port"), r.PostFormValue("port"))
