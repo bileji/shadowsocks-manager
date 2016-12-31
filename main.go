@@ -1,15 +1,11 @@
 package main
 
 import (
-    "fmt"
-    "time"
-    "strconv"
-    "strings"
-    "encoding/json"
-    "shadowsocks-manager/manager"
-    "flag"
     "os"
+    "fmt"
+    "flag"
     "shadowsocks-manager/service"
+    "shadowsocks-manager/manager"
 )
 
 var (
@@ -59,7 +55,6 @@ func main() {
         UserC: USER_COLLECTION,
         ListenPorts: manager.New(),
     }
-
     defer USock.Con.Session.Close()
 
     // 正在监听的端口
@@ -71,29 +66,7 @@ func main() {
     go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
 
     // 监听各端口流量情况
-    go USock.Rec(func(buffer []byte) {
-        M := make(map[string]interface{})
-        if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") > 0 {
-
-        } else {
-            if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
-                for k, v := range M {
-                    switch Size := v.(type) {
-                    case float64:
-                        Port, _ := strconv.Atoi(k)
-                        USock.SaveToDB(&manager.Flow{
-                            Port: int32(Port),
-                            Size: Size,
-                            Created: time.Now().Format("2006-01-02 15:04:05"),
-                            Modified: time.Now().Format("2006-01-02 15:04:05"),
-                        })
-                    default:
-                        fmt.Printf("undefined message type: %T => %T\r\n", k, v)
-                    }
-                }
-            }
-        }
-    })
+    go USock.Rec(USock.SaveToDB)
 
     // web服务
     Web := service.Web{

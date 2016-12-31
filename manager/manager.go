@@ -9,6 +9,8 @@ import (
     "gopkg.in/mgo.v2/bson"
     "fmt"
     "time"
+    "strings"
+    "encoding/json"
 )
 
 type Options struct {
@@ -197,8 +199,26 @@ func (us *UnixSock) Monitor() error {
     return nil
 }
 
-// DB相关
-func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
-    err = us.Con.C(us.FlowC).Insert(flow)
-    return err
+func (us *UnixSock) SaveToDB(buffer []byte) {
+    M := make(map[string]interface{})
+    if Message := strings.TrimLeft(string(buffer), "stat: "); strings.Compare(Message, "pong") > 0 {
+
+    } else {
+        if err := json.NewDecoder(strings.NewReader(Message)).Decode(&M); err == nil {
+            for k, v := range M {
+                switch Size := v.(type) {
+                case float64:
+                    Port, _ := strconv.Atoi(k)
+                    us.Con.C(us.FlowC).Insert(&Flow{
+                        Port: int32(Port),
+                        Size: Size,
+                        Created: time.Now().Format("2006-01-02 15:04:05"),
+                        Modified: time.Now().Format("2006-01-02 15:04:05"),
+                    })
+                default:
+                    fmt.Printf("undefined message type: %T => %T\r\n", k, v)
+                }
+            }
+        }
+    }
 }
