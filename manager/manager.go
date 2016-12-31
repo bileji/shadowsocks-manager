@@ -11,11 +11,6 @@ import (
     "time"
 )
 
-var (
-    USER_COLLECTION = "users"
-    FLOW_COLLECTION = "flows"
-)
-
 type Options struct {
     DBHost             string
     DBName             string
@@ -52,22 +47,23 @@ type UnixSock struct {
     RSock       string
     UConn       *net.UnixConn
     Con         *mgo.Database
-    Collection  string
+    FlowC       string
+    UserC       string
     Args        *Options
     ListenPorts *Ports
 }
 
-func ConnectToMgo(host string, db string, username string, password string) (error, *mgo.Database) {
-    session, err := mgo.Dial(host)
+func ConnectToMgo(Args *Options) (error, *mgo.Database) {
+    session, err := mgo.Dial(Args.DBHost)
     if err != nil {
         return err, nil
     }
 
-    err = session.DB(db).Login(username, password)
+    err = session.DB(Args.DBName).Login(Args.DBUsername, Args.DBPassword)
     if err != nil {
         return err, nil
     }
-    return nil, session.DB(db)
+    return nil, session.DB(Args.DBName)
 }
 
 func (us *UnixSock) Listen() {
@@ -130,7 +126,7 @@ func (us *UnixSock) Monitor() error {
 
     fmt.Printf("[%s] +auto update %dsec\r\n", time.Now().Format("2006-01-02 15:04:05"), us.Args.HeartbeatFrequency)
 
-    if us.Con.C(USER_COLLECTION).Find(bson.M{"status": true}).All(&Users) == nil {
+    if us.Con.C(us.UserC).Find(bson.M{"status": true}).All(&Users) == nil {
         for _, User := range Users {
             if User.Port != 0 {
                 Ports.Add(User.Port)
@@ -148,7 +144,7 @@ func (us *UnixSock) Monitor() error {
 
     if !Ports.Empty() {
         StartTime, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-        Pipe := us.Con.C(FLOW_COLLECTION).Pipe([]bson.M{
+        Pipe := us.Con.C(us.FlowC).Pipe([]bson.M{
             {
                 "$match": bson.M{
                     "port": bson.M{"$in": Ports.List()},
@@ -205,6 +201,6 @@ func (us *UnixSock) Monitor() error {
 
 // DB相关
 func (us *UnixSock) SaveToDB(flow *Flow) (err error) {
-    err = us.Con.C(us.Collection).Insert(flow)
+    err = us.Con.C(us.FlowC).Insert(flow)
     return err
 }

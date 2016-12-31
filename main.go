@@ -12,19 +12,14 @@ import (
     "shadowsocks-manager/service"
 )
 
-//type Limit struct {
-//    AllowSize float64
-//    Password  string
-//}
-
 var (
     MONGODB_HOST = "127.0.0.1:27017"
     MONGODB_DATABASE = "vpn"
     MONGODB_USERNAME = "shadowsocks"
     MONGODB_PASSWORD = "mlgR4evB"
 
-    USER_COLLECTION = "users"
     FLOW_COLLECTION = "flows"
+    USER_COLLECTION = "user"
 
     HEARTBEAT_FREQUENCY = 30
 )
@@ -52,30 +47,30 @@ func GetArgs() *manager.Options {
 }
 
 func main() {
-    Args := GetArgs()
-
-    err, Con := manager.ConnectToMgo(Args.DBHost, Args.DBName, Args.DBUsername, Args.DBPassword)
-    if err != nil {
-        panic(err)
-    }
-    defer Con.Session.Close()
 
     USock := manager.UnixSock{
         Net: "unixgram",
         LSock: "/var/run/manager.sock",
         RSock: "/var/run/shadowsocks-manager.sock",
-        Con: Con,
-        Collection: FLOW_COLLECTION,
-        Args: Args,
+        Args: GetArgs(),
+        FlowC: FLOW_COLLECTION,
+        UserC: USER_COLLECTION,
         ListenPorts: manager.New(),
     }
+
+    err, Con := manager.ConnectToMgo(USock.Args)
+    if err != nil {
+        panic(err)
+    }
+    defer Con.Session.Close()
 
     // 正在监听的端口
     USock.Listen()
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    go USock.HeartBeat(Args.HeartbeatFrequency, USock.Monitor)
+    USock.Monitor()
+    go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
 
     // 监听各端口流量情况
     go USock.Rec(func(buffer []byte) {
