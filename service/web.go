@@ -26,12 +26,10 @@ type AddUserParams  struct {
 
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
-    //fmt.Println(r.PostFormValue("port"), r.Method, r.PostForm, r.Body)
-    fmt.Println(r.Method, r.PostForm, r.Body)
+    fmt.Println(r.PostFormValue("port"), r.PostForm)
 
     if r.Method == "POST" {
         var Params AddUserParams
-        fmt.Println(r.PostForm.Encode())
         Args, err := json.Marshal(r.PostForm)
         r.ParseForm()
         if err == nil {
