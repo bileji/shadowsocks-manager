@@ -5,6 +5,7 @@ import (
     "net/http"
     "io/ioutil"
     "gopkg.in/mgo.v2"
+    "encoding/json"
 )
 
 type Web struct {
@@ -17,13 +18,22 @@ func (w *Web) Run() {
     http.ListenAndServe(w.Addr, nil)
 }
 
+type AddU struct {
+    Port     int32
+    Password string
+}
+
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
     r.ParseForm()
     if r.Method == "POST" {
         result, _ := ioutil.ReadAll(r.Body)
         r.Body.Close()
-        fmt.Printf("%s\n", result)
+
+        var Params AddU
+        json.Unmarshal([]byte(result), &Params)
+
+        fmt.Println(Params)
     } else {
 
     }
