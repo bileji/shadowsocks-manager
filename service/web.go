@@ -159,7 +159,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
         if web.DB_Con.C("flows").Find(bson.M{
             "port": Params.Port,
             "created": bson.M{"$gte": Params.StartTimestamp, "$lte": Params.EndTimestamp},
-        }).All(&Resp) {
+        }).All(&Resp) == nil {
             Data := make(map[string]interface{})
             Data["list"] = Resp
             D, _ := json.Marshal(Res{
