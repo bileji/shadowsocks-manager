@@ -61,12 +61,12 @@ func main() {
     USock.Listen()
     go USock.Ping()
 
+    // 监听各端口流量情况
+    go USock.Rec(USock.SaveToDB)
+
     // 每30sec检查流量是否超标
     USock.Monitor()
     go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
-
-    // 监听各端口流量情况
-    go USock.Rec(USock.SaveToDB)
 
     // web服务
     Web := service.Web{
