@@ -139,7 +139,7 @@ func (web *Web) editUser() {
 
 }
 
-// 查看端口流量
+// 查看单端口流量
 func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
 
     type Params struct {
@@ -156,7 +156,11 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
             Port: int32(P),
             StartTimestamp: r.PostFormValue("start_timestamp"),
             EndTimestamp: r.PostFormValue("end_timestamp"),
-            Limit: (L || 5000),
+            Limit: L,
+        }
+
+        if Params.Limit == 0 {
+            Params.Limit = 5000
         }
 
         if len(Params.EndTimestamp) == 0 {
