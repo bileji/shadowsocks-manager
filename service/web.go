@@ -7,6 +7,7 @@ import (
     "encoding/json"
     "shadowsocks-manager/manager"
     "time"
+    "gopkg.in/mgo.v2/bson"
 )
 
 var (
@@ -26,7 +27,7 @@ type Res struct {
 }
 
 func (w *Web) Run() {
-    http.HandleFunc("/addUser", w.addUser)
+    http.HandleFunc("/user/add", w.addUser)
     http.ListenAndServe(w.Addr, nil)
 }
 
@@ -60,6 +61,22 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             return
         } else {
             // todo 判断
+
+            Count, _ := web.DB_Con.C("users").Find(bson.M{
+                "$or": []bson.M{
+                    "username": Params.Username,
+                    "port": Params.Port,
+                },
+            }).Count()
+            if Count > 0 {
+                D, _ := json.Marshal(Res{
+                    Code: FAILED,
+                    Data: make(map[string]interface{}),
+                    Message: "the port is occupied",
+                })
+                w.Write(D)
+                return
+            }
 
             err := web.DB_Con.C("users").Insert(manager.User{
                 Username: Params.Username,
