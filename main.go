@@ -62,6 +62,7 @@ func main() {
     if err != nil {
         panic(err)
     }
+    USock.Con = Con
     defer Con.Session.Close()
 
     // 正在监听的端口
@@ -69,7 +70,7 @@ func main() {
     go USock.Ping()
 
     // 每30sec检查流量是否超标
-    //USock.Monitor()
+    USock.Monitor()
     go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
 
     // 监听各端口流量情况
