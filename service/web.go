@@ -26,6 +26,7 @@ type AddUserParams  struct {
 // todo 添加用户
 func addUser(w http.ResponseWriter, r *http.Request) {
     r.ParseForm()
+    fmt.Println(r.PostFormValue("port"), r.Method, r.Form)
     if r.Method == "POST" {
         var Params AddUserParams
         fmt.Println(r.Form)
