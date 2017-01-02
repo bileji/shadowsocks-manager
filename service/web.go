@@ -256,8 +256,8 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        for _, Item := range Users {
-            Relation[int(Item.Port)] = Item
+        for _, User := range Users {
+            Relation[int(User.Port)] = User
         }
 
         for Key, Item := range Resp {
