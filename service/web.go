@@ -240,7 +240,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
 
         var Ports []int
         var Users []manager.User
-        var Relation map[string]manager.User
+        var Relation map[int]manager.User
         for _, Item := range Resp {
             Ports = append(Ports, Item["_id"].(int))
         }
@@ -257,7 +257,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
         }
 
         for _, Item := range Users {
-            Relation[Item["port"].(int)] = Item
+            Relation[int(Item.Port)] = Item
         }
 
         for K, Item := range Resp {
