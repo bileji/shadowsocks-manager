@@ -240,7 +240,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
 
         var Ports []int
         var Users []manager.User
-        var Relation map[int]manager.User
+        //var Relation map[int]manager.User
         for _, Item := range Resp {
             Ports = append(Ports, Item["_id"].(int))
         }
