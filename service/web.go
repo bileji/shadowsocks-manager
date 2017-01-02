@@ -153,7 +153,13 @@ func (web *Web) forbidUser(w http.ResponseWriter, r *http.Request) {
                 }.Json(w)
                 return
             }
-            if web.DBCon.C("users").Update(bson.M{"port": Params.Port}, bson.M{"status": false}) != nil {
+            if web.DBCon.C("users").Update(bson.M{
+                "port": Params.Port,
+            }, bson.M{
+                "$set": bson.M{
+                    "status": false,
+                },
+            }) != nil {
                 Response{
                     Code: FAILED,
                     Data: make(map[string]interface{}),
