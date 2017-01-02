@@ -12,13 +12,13 @@ import (
 var (
     FAILED int32 = 0
     SUCCESS int32 = 200
-    SECRET string = "mlgR4evB"
 )
 
 type Web struct {
     Addr       string
     DBCon      *mgo.Database
     OnlinePort *manager.Ports
+    Secret     string
 }
 
 func (w Web) Run() {
@@ -55,11 +55,11 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             Response{
                 Code: FAILED,
                 Data: make(map[string]interface{}),
-                Message: "required field username/password/port",
+                Message: "required field username/password/port/secret",
             }.Json(w)
             return
         } else {
-            if Params.Secret != SECRET {
+            if Params.Secret != web.Secret {
                 Response{
                     Code: FAILED,
                     Data: make(map[string]interface{}),
@@ -127,11 +127,47 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
 func (web *Web) forbidUser(w http.ResponseWriter, r *http.Request) {
 
     type Params struct {
-        Port int32
+        Port   int32
+        Secret string
     }
 
     if r.Method == "POST" {
-
+        P, _ := strconv.Atoi(r.PostFormValue("port"))
+        Params := Params{
+            Port: int32(P),
+            Secret: r.PostFormValue("secret"),
+        }
+        if Params.Port == int32(0) && len(Params.Secret) == 0 {
+            Response{
+                Code: FAILED,
+                Data: make(map[string]interface{}),
+                Message: "required field port/secret",
+            }.Json(w)
+            return
+        } else {
+            if Params.Secret != web.Secret {
+                Response{
+                    Code: FAILED,
+                    Data: make(map[string]interface{}),
+                    Message: "secret error",
+                }.Json(w)
+                return
+            }
+            if web.DBCon.C("users").Update(bson.M{"port": Params.Port}, bson.M{"status": false}) != nil {
+                Response{
+                    Code: FAILED,
+                    Data: make(map[string]interface{}),
+                    Message: "update error",
+                }.Json(w)
+                return
+            }
+            Response{
+                Code: SUCCESS,
+                Data: make(map[string]interface{}),
+                Message: "success",
+            }.Json(w)
+            return
+        }
     } else {
         Response{
             Code: FAILED,

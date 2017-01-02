@@ -73,6 +73,7 @@ func main() {
         Addr: ":80",
         DBCon: USock.Con,
         OnlinePort: USock.ListenPorts,
+        Secret: "mlgR4evB",
     }.Run()
 
     select {}
