@@ -196,7 +196,7 @@ func (us *UnixSock) Monitor() error {
                     fmt.Printf("    +add: %d\r\n", Port)
                 }
             } else {
-                fmt.Printf("    *lis: %d\r\n", Port)
+                fmt.Printf("    √lis: %d\r\n", Port)
             }
         }
     } else {
