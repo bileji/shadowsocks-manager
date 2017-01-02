@@ -139,7 +139,11 @@ func (us *UnixSock) Monitor() error {
     }
 
     for _, Port := range Minus(us.ListenPorts, Ports).List() {
-        us.Del(Port)
+        _, err := us.Del(Port)
+        if err == nil {
+            us.ListenPorts.Remove(Port)
+            fmt.Printf("    -del: %d\r\n", Port)
+        }
     }
 
     if !Ports.Empty() {
