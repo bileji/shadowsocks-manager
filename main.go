@@ -14,6 +14,9 @@ var (
     MONGODB_USERNAME = "shadowsocks"
     MONGODB_PASSWORD = "mlgR4evB"
 
+    WEB_ADDR = ":80"
+    WEB_SECRET = "mlgR4evB"
+
     FLOW_COLLECTION = "flows"
     USER_COLLECTION = "users"
 
@@ -30,7 +33,11 @@ func GetArgs() *manager.Options {
     DBName := flag.String("db_name", MONGODB_DATABASE, "db name")
     Username := flag.String("username", MONGODB_USERNAME, "db's username")
     Pwd := flag.String("password", MONGODB_PASSWORD, "db's password")
+
     Heartbeat := flag.Int("heartbeat", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
+
+    WebAddr := flag.String("web_addr", WEB_ADDR, "web addr")
+    WebSecret := flag.String("web_secret", WEB_SECRET, "admin secret")
 
     flag.Parse()
     return &manager.Options{
@@ -39,6 +46,8 @@ func GetArgs() *manager.Options {
         DBUsername: *Username,
         DBPassword: *Pwd,
         HeartbeatFrequency: *Heartbeat,
+        WebAddr: *WebAddr,
+        WebSecret: *WebSecret,
     }
 }
 
@@ -70,10 +79,10 @@ func main() {
 
     // web服务
     go service.Web{
-        Addr: ":80",
+        Addr: USock.Args.WebAddr,
         DBCon: USock.Con,
         OnlinePort: USock.ListenPorts,
-        Secret: "mlgR4evB",
+        Secret: USock.Args.WebSecret,
     }.Run()
 
     select {}

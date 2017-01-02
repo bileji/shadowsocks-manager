@@ -19,6 +19,8 @@ type Options struct {
     DBUsername         string
     DBPassword         string
     HeartbeatFrequency int
+    WebAddr            string
+    WebSecret          string
 }
 
 type User struct {
