@@ -4,7 +4,6 @@ import (
     "net/http"
     "gopkg.in/mgo.v2"
     "strconv"
-    "encoding/json"
     "shadowsocks-manager/manager"
     "time"
     "gopkg.in/mgo.v2/bson"
@@ -21,14 +20,9 @@ type Web struct {
     OnlinePort *manager.Ports
 }
 
-type Res struct {
-    Code    int32 `json:"code"`
-    Data    map[string]interface{} `json:"data"`
-    Message string `json:"message"`
-}
-
 func (w *Web) Run() {
     http.HandleFunc("/user/add", w.addUser)
+    http.HandleFunc("/user/forbid", w.forbidUser)
     http.HandleFunc("/static/single", w.staticSingle)
     http.HandleFunc("/static/multi", w.staticMulti)
     http.ListenAndServe(w.Addr, nil)
@@ -55,12 +49,11 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
         }
 
         if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
-            D, _ := json.Marshal(Res{
+            Response{
                 Code: FAILED,
                 Data: make(map[string]interface{}),
                 Message: "required field username/password/port",
-            })
-            w.Write(D)
+            }.Json(w)
             return
         } else {
             // todo 判断
@@ -76,12 +69,11 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
                 },
             }).Count()
             if Count > 0 {
-                D, _ := json.Marshal(Res{
+                Response{
                     Code: FAILED,
                     Data: make(map[string]interface{}),
                     Message: "the username/port is occupied",
-                })
-                w.Write(D)
+                }.Json(w)
                 return
             }
 
@@ -95,50 +87,48 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
                 Modified: time.Now().Format("2006-01-02 15:04:05"),
             })
             if err != nil {
-                D, _ := json.Marshal(Res{
+                Response{
                     Code: FAILED,
                     Data: make(map[string]interface{}),
                     Message: "save failed",
-                })
-                w.Write(D)
+                }.Json(w)
                 return
             }
         }
 
-        D, _ := json.Marshal(Res{
+        Response{
             Code: SUCCESS,
             Data: make(map[string]interface{}),
             Message: "add success",
-        })
-        w.Write(D)
+        }.Json(w)
         return
     } else {
-        D, _ := json.Marshal(Res{
+        Response{
             Code: FAILED,
             Data: make(map[string]interface{}),
             Message: "required method post",
-        })
-        w.Write(D)
+        }.Json(w)
         return
     }
 }
 
-// todo 移除用户
-func (web *Web) stopUser() {
-
-}
-
-// todo 用户列表
-func (web *Web) editUser() {
+// 禁用用户
+func (web *Web) forbidUser(w http.ResponseWriter, r *http.Request) {
 
     type Params struct {
-        Username  string
-        Port      int32
-        Password  string
-        AllowSize float64
-        Status    bool
+        Port int32
     }
 
+    if r.Method == "POST" {
+
+    } else {
+        Response{
+            Code: FAILED,
+            Data: make(map[string]interface{}),
+            Message: "required method post",
+        }.Json(w)
+        return
+    }
 }
 
 // 查看单端口流量
@@ -183,7 +173,7 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                 Resp[K] = Item
             }
 
-            D, _ := json.Marshal(Res{
+            Response{
                 Code: SUCCESS,
                 Data: map[string]interface{}{
                     "list": Resp,
@@ -191,25 +181,22 @@ func (web *Web) staticSingle(w http.ResponseWriter, r *http.Request) {
                     "len": len(Resp),
                 },
                 Message: "flow static of port: " + strconv.Itoa(int(Params.Port)),
-            })
-            w.Write(D)
+            }.Json(w)
             return
         } else {
-            D, _ := json.Marshal(Res{
+            Response{
                 Code: FAILED,
                 Data: make(map[string]interface{}),
                 Message: "query failed",
-            })
-            w.Write(D)
+            }.Json(w)
             return
         }
     } else {
-        D, _ := json.Marshal(Res{
+        Response{
             Code: FAILED,
             Data: make(map[string]interface{}),
             Message: "required method post",
-        })
-        w.Write(D)
+        }.Json(w)
         return
     }
 }
@@ -243,39 +230,58 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
 
         Resp := []bson.M{}
         if err := Pipe.All(&Resp); err != nil {
-            D, _ := json.Marshal(Res{
+            Response{
                 Code: FAILED,
                 Data: make(map[string]interface{}),
                 Message: "pipe error",
-            })
-            w.Write(D)
+            }.Json(w)
             return
+        }
+
+        var Ports []int
+        var Users []manager.User
+        var Relation map[string]manager.User
+        for _, Item := range Resp {
+            Ports = append(Ports, Item["_id"].(int))
+        }
+
+        if web.DBCon.C("users").Find(bson.M{
+            "port": bson.M{"$in": Ports},
+        }).All(&Users) != nil {
+            Response{
+                Code: FAILED,
+                Data: map[string]interface{}{},
+                Message: "query error",
+            }.Json(w)
+            return
+        }
+
+        for _, Item := range Users {
+            Relation[Item["port"].(int)] = Item
         }
 
         for K, Item := range Resp {
             Item["port"] = Item["_id"]
+            Item["username"] = Relation[Item["port"].(int)]
             delete(Item, "_id")
             Resp[K] = Item
         }
 
-        D, _ := json.Marshal(Res{
+        Response{
             Code: SUCCESS,
             Data: map[string]interface{}{
                 "list": Resp,
                 "listening": web.OnlinePort.List(),
             },
             Message: "success",
-        })
-        w.Header().Set("Content-type", "application/json")
-        w.Write(D)
+        }.Json(w)
         return
     } else {
-        D, _ := json.Marshal(Res{
+        Response{
             Code: FAILED,
             Data: make(map[string]interface{}),
             Message: "required method post",
-        })
-        w.Write(D)
+        }.Json(w)
         return
     }
 }
