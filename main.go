@@ -36,8 +36,8 @@ func GetArgs() *manager.Options {
 
     Heartbeat := flag.Int("heartbeat", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
 
-    WebAddr := flag.String("web_addr", WEB_ADDR, "web addr")
-    WebSecret := flag.String("web_secret", WEB_SECRET, "admin secret")
+    WebAddr := flag.String("addr", WEB_ADDR, "web addr")
+    WebSecret := flag.String("secret", WEB_SECRET, "admin secret")
 
     flag.Parse()
     return &manager.Options{
