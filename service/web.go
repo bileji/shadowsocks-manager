@@ -12,6 +12,7 @@ import (
 var (
     FAILED int32 = 0
     SUCCESS int32 = 200
+    SECRET string = "mlgR4evB"
 )
 
 type Web struct {
@@ -36,6 +37,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
         Port      int32
         Password  string
         AllowSize float64
+        Secret    string
     }
 
     if r.Method == "POST" {
@@ -46,6 +48,7 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             Port: int32(P),
             Password: r.PostFormValue("password"),
             AllowSize: A * 1000000,
+            Secret: r.PostFormValue("secret"),
         }
 
         if len(Params.Username) == 0 || len(Params.Password) == 0 || Params.Port == 0 {
@@ -56,8 +59,16 @@ func (web *Web) addUser(w http.ResponseWriter, r *http.Request) {
             }.Json(w)
             return
         } else {
-            // todo 判断
+            if Params.Secret != SECRET {
+                Response{
+                    Code: FAILED,
+                    Data: make(map[string]interface{}),
+                    Message: "secret error",
+                }.Json(w)
+                return
+            }
 
+            // todo 判断
             Count, _ := web.DBCon.C("users").Find(bson.M{
                 "$or": []bson.M{
                     {
