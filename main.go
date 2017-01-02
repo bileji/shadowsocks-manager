@@ -15,7 +15,7 @@ var (
     MONGODB_PASSWORD = "mlgR4evB"
 
     WEB_ADDR = ":80"
-    WEB_SECRET = "mlgR4evB"
+    WEB_SECRET = "7ac003ee"
 
     FLOW_COLLECTION = "flows"
     USER_COLLECTION = "users"
@@ -30,9 +30,9 @@ func GetArgs() *manager.Options {
     }
 
     DBHost := flag.String("host", MONGODB_HOST, "mongodb host:port")
-    DBName := flag.String("db_name", MONGODB_DATABASE, "db name")
+    DBName := flag.String("database", MONGODB_DATABASE, "database name(mongo)")
     Username := flag.String("username", MONGODB_USERNAME, "db's username")
-    Pwd := flag.String("password", MONGODB_PASSWORD, "db's password")
+    Password := flag.String("password", MONGODB_PASSWORD, "db's password")
 
     Heartbeat := flag.Int("heartbeat", HEARTBEAT_FREQUENCY, "flow detection frequency(sec)")
 
@@ -44,7 +44,7 @@ func GetArgs() *manager.Options {
         DBHost: *DBHost,
         DBName: *DBName,
         DBUsername: *Username,
-        DBPassword: *Pwd,
+        DBPassword: *Password,
         HeartbeatFrequency: *Heartbeat,
         WebAddr: *WebAddr,
         WebSecret: *WebSecret,
