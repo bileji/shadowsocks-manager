@@ -20,7 +20,7 @@ type Web struct {
     OnlinePort *manager.Ports
 }
 
-func (w *Web) Run() {
+func (w Web) Run() {
     http.HandleFunc("/user/add", w.addUser)
     http.HandleFunc("/user/forbid", w.forbidUser)
     http.HandleFunc("/static/single", w.staticSingle)
@@ -240,7 +240,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
 
         var Ports []int
         var Users []manager.User
-        //var Relation map[int]manager.User
+        var Relation map[int]manager.User
         for _, Item := range Resp {
             Ports = append(Ports, Item["_id"].(int))
         }
@@ -256,6 +256,10 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        for _, Item := range Users {
+            Relation[int(Item.Port)] = Item
+        }
+
         Response{
             Code: FAILED,
             Data: map[string]interface{}{},
@@ -263,10 +267,6 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
         }.Json(w)
         return
 
-        //for _, Item := range Users {
-        //    Relation[int(Item.Port)] = Item
-        //}
-        //
         //for Key, Item := range Resp {
         //    Item["port"] = Item["_id"]
         //    Item["username"] = Relation[Item["port"].(int)]
