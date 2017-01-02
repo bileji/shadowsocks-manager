@@ -69,11 +69,12 @@ func main() {
     go USock.HeartBeat(USock.Args.HeartbeatFrequency, USock.Monitor)
 
     // web服务
-    go service.Web{
+    Web := service.Web{
         Addr: ":80",
         DBCon: USock.Con,
         OnlinePort: USock.ListenPorts,
-    }.Run()
+    }
+    go Web.Run()
 
     select {}
 }
