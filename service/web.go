@@ -266,6 +266,7 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             },
             Message: "success",
         })
+        w.Header().Set("Content-type", "application/json")
         w.Write(D)
         return
     } else {
