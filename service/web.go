@@ -256,26 +256,33 @@ func (web *Web) staticMulti(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        for _, Item := range Users {
-            Relation[int(Item.Port)] = Item
-        }
-
-        for K, Item := range Resp {
-            Item["port"] = Item["_id"]
-            Item["username"] = Relation[Item["port"].(int)]
-            delete(Item, "_id")
-            Resp[K] = Item
-        }
-
         Response{
-            Code: SUCCESS,
-            Data: map[string]interface{}{
-                "list": Resp,
-                "listening": web.OnlinePort.List(),
-            },
-            Message: "success",
+            Code: FAILED,
+            Data: map[string]interface{}{},
+            Message: "query error",
         }.Json(w)
         return
+
+        //for _, Item := range Users {
+        //    Relation[int(Item.Port)] = Item
+        //}
+        //
+        //for Key, Item := range Resp {
+        //    Item["port"] = Item["_id"]
+        //    Item["username"] = Relation[Item["port"].(int)]
+        //    delete(Item, "_id")
+        //    Resp[Key] = Item
+        //}
+        //
+        //Response{
+        //    Code: SUCCESS,
+        //    Data: map[string]interface{}{
+        //        "list": Resp,
+        //        "listening": web.OnlinePort.List(),
+        //    },
+        //    Message: "success",
+        //}.Json(w)
+        //return
     } else {
         Response{
             Code: FAILED,
