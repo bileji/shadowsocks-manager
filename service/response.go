@@ -11,7 +11,7 @@ type Response struct {
     Message string `json:"message"`
 }
 
-func (r *Response) Json(w http.ResponseWriter) {
+func (r Response) Json(w http.ResponseWriter) {
     w.Header().Set("Content-type", "application/json")
     bytes, _ := json.Marshal(r)
     w.Write(bytes)
